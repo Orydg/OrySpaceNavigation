@@ -19,7 +19,7 @@ class GUI:
     Класс, отвечающий за визуализацию
     """
 
-    def __init__(self, w, h, t):
+    def __init__(self, w, h, sm, t):
         pygame.init()
 
         # название окна
@@ -30,14 +30,9 @@ class GUI:
 
         self.sc = pygame.display.set_mode((self.W, self.H))
 
-        self.EventLoop(t)
+        self.event_loop(sm, t)
 
-    def Update_screen(self):
-        # после отрисовки всего, переворачиваем экран
-        pygame.display.update()
-        # pygame.display.flip()
-
-    def EventLoop(self, t):
+    def event_loop(self, sm, t):
 
         # Ввод процесса (события)
         while True:
@@ -88,6 +83,8 @@ class SpaceMath:
 
         Returns
         -------
+        Все объекты из списка args добавлены в среду self.Objects для вычисления их взаимодействий.
+        Если хотя бы один из объектов не содержит параметра self.Mass возвращае исключение.
 
         """
 
@@ -99,12 +96,26 @@ class SpaceMath:
         self.Objects += args
 
     def tic_tac(self):
+        """
+        Метод создан для тестов - изменяет внутреннее состояние объектов в self.Objects с течением времени.
+
+        """
+
         self.Time += 1/60
         for obj in self.Objects:
             obj.change_coord(self.Time)
 
     @staticmethod
     def distance(obj1, obj2, to_orient=False):
+        """
+        Метод измеряет дистанцию между двумя объектами obj1 и obj2 (модуль вектора между ними).
+
+        obj1: Объект класса SpaceObjects.
+        obj2: Объект класса SpaceObjects.
+        to_orient: Логический флаг, по умолчанию имеет значение False. Если True, метод возвращает ортогональный вектор.
+
+        """
+
         x1, y1 = obj1.get_coord()
         x2, y2 = obj2.get_coord()
         dist = ((x2 - x1)**2 + (y2 - y1)**2)**0.5
@@ -116,27 +127,65 @@ class SpaceMath:
 
     @staticmethod
     def gravity_force(obj1, obj2):
+        """
+        Метод возвращает модуль силы между двумя объектами obj1 и obj2.
+
+        obj1: Объект класса SpaceObjects.
+        obj2: Объект класса SpaceObjects.
+
+        """
+
         return G * obj1.Mass * obj2.Mass / SpaceMath.distance(obj1, obj2)**2
 
     @staticmethod
-    def orientation_form_obj(obj1, obj2):
+    def orientation_from_obj(obj1, obj2):
+        """
+        Метод возвращает ортогональный вектор между двумя объектами obj1 и obj2.
+
+        obj1: Объект класса SpaceObjects.
+        obj2: Объект класса SpaceObjects.
+
+        """
+
         return SpaceMath.distance(obj1, obj2, True)
 
     def gravity_interactions(self, t):
+        """
+        Метод анализирует гравитационное взаимодействие между всеми обектами в self.Objects.
+        Результатом работы метода является изменение состаяний всех объектов в self.Objects
+        по результатам их совместных взаимотействий.
+
+        """
+
         for n, obj1 in enumerate(self.Objects):
             for j in range(n+1, len(self.Objects)):
                 obj2 = self.Objects[j]
                 force = SpaceMath.gravity_force(obj1, obj2)
                 a1 = force / obj1.Mass
                 a2 = force / obj2.Mass
-                ort_vect = SpaceMath.orientation_form_obj(obj1, obj2)
-                obj1.change_coord(t, ax=a1 * ort_vect[0], ay=a1 * ort_vect[1])
-                obj2.change_coord(t, ax=-a2 * ort_vect[0], ay=-a2 * ort_vect[1])
+                ort_vector = SpaceMath.orientation_from_obj(obj1, obj2)
+                obj1.change_coord(t, ax=a1 * ort_vector[0], ay=a1 * ort_vector[1])
+                obj2.change_coord(t, ax=-a2 * ort_vector[0], ay=-a2 * ort_vector[1])
 
 
 class SpaceObjects:
     """
     Класс космических объектов
+
+    self.Name: Имя объекта.
+    self.Mass: Масса объекта.
+    self.R: Радиус объекта.
+    self.X: Координата Х объекта.
+    self.Y: Координата Y объекта.
+    self.Vх: Проекция скорости по оси Х объекта.
+    self.Vy: Проекция скорости по оси У объекта.
+    self.Ax: Проекция ускорения по оси Х объекта.
+    self.Ay: Проекция ускорения по оси У объекта.
+    self.StaticCoord: Логический флаг.
+    По умолчанию имеет значение False - координаты объекта можно менять.
+    True - координаты объекта статичны, их не изменить методом change_coord().
+    self.Color: Цвет объекта.
+
     """
     def __init__(self, name, mass, r):
         self.Name = name
@@ -151,7 +200,12 @@ class SpaceObjects:
         self.StaticCoord = False
         self.Color = pygame.Color('green')
 
-    def set_coord(self, x=0, y=0, vx=0, vy=0, ax=0, ay=0, t=1):
+    def set_coord(self, x=0.0, y=0.0, vx=0.0, vy=0.0, ax=0.0, ay=0.0, t=1.0):
+        """
+        Метод устанавливает значение координат объекта.
+
+        """
+
         self.X = x + vx * t + ax * t**2
         self.Y = y + vy * t + ay * t**2
         self.Vx = vx + ax * t
@@ -160,9 +214,19 @@ class SpaceObjects:
         self.Ay = ay
 
     def get_coord(self):
+        """
+        Метод возвращает пару координат объекта.
+
+        """
+
         return self.X, self.Y
 
     def change_coord(self, t=1, x=None, y=None, vx=None, vy=None, ax=None, ay=None):
+        """
+        Метод предназначен для изменения координат, скорости и ускорения объекта.
+
+        """
+
         if self.StaticCoord:
             self.set_coord(self.X, self.Y)
             return
@@ -181,14 +245,39 @@ class SpaceObjects:
         self.set_coord(x, y, vx, vy, ax, ay, t)
 
     def set_color(self, color):
+        """
+        Метод позволяет изменить цвет объекта.
+
+        color: Цвет объекта.
+
+        """
+
         self.Color = color
 
     def draw(self, sc):
+        """
+        Метод отрисовки объекта на плоскости sc.
+
+        sc: плоскость для отрсовки объекта.
+
+        """
+
         pygame.draw.circle(sc, self.Color, (self.X, self.Y), self.R)
 
+#====================================================================================================
 
-if __name__ == "__main__":
 
+def run():
+    """
+    Метод run() запускает программу
+
+    Данный метод:
+    - считывает настройки по умолчанию
+    - запускает математическое пространство SpaceMath()
+    - формирует начальные космические объекты SpaceObjects()
+    - добавляет SpaceObjects() в SpaceMath()
+    - запускает процесс визуализации
+    """
     # Настройки
     # Размеры окна
     w, h = 1200, 800
@@ -197,8 +286,8 @@ if __name__ == "__main__":
     sm = SpaceMath()
 
     # Начальные координаты
-    x0 = w//2
-    y0 = h//2
+    x0 = w // 2
+    y0 = h // 2
 
     # создаем объекты
     # Солнце
@@ -215,7 +304,7 @@ if __name__ == "__main__":
     mass_of_earth = 50000000
     earth = SpaceObjects('Earth', mass_of_earth, 25)
     earth.set_color(pygame.Color('blue'))
-    earth.set_coord(x0-100, y0+150, 0.5)
+    earth.set_coord(x0 - 100, y0 + 150, 0.5)
 
     # Марс
     # mass_of_mars = ...
@@ -231,6 +320,13 @@ if __name__ == "__main__":
     t = 10
 
     # запуск визуализации
-    GUI(w, h, t)
+    GUI(w, h, sm, t)
 
     # после закрытия окна визуализации, программа останавливается и не производит никаких действий
+
+#====================================================================================================
+
+
+if __name__ == "__main__":
+
+    run()
