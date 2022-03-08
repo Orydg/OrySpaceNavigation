@@ -1,5 +1,7 @@
 # научные константы: https://docs.scipy.org/doc/scipy/reference/constants.html
 # цвета в pygame: https://pygame-zero.readthedocs.io/en/latest/colors_ref.html#id2
+# пример создания платформера: https://habr.com/ru/post/193888/
+
 
 """
 Используемая система измерени: https://metrob.ru/html/ed_izmer/Sist_SI.html
@@ -17,6 +19,12 @@ import datetime
 class GUI:
     """
     Класс, отвечающий за визуализацию
+
+    w - Ширина экрана.
+    h - Высота экрана.
+    sm - Объект класса SpaceMath, отвечающего за математику.
+    t - Время.
+
     """
 
     def __init__(self, w, h, sm, t):
@@ -25,10 +33,17 @@ class GUI:
         # название окна
         pygame.display.set_caption('OSN')
 
+        # ширина и высота окна
         self.W, self.H = w, h
+
+        # количество кадров в секунду
         self.fps = 30
 
+        # создание окна
         self.sc = pygame.display.set_mode((self.W, self.H))
+
+        # создание видимой части
+        self.bg = pygame.Surface((self.W, self.H))
 
         self.event_loop(sm, t)
 
@@ -38,7 +53,8 @@ class GUI:
         while True:
 
             # обновление фона
-            self.sc.fill("#000022")
+            # self.sc.fill("#000022")
+            self.bg.fill("#000022")
 
             # цикл обработки событий
             for event in pygame.event.get():
@@ -52,13 +68,35 @@ class GUI:
 
             # Визуализация (сборка)
             for sp in sm.Objects:
-                sp.draw(self.sc)
+                # sp.draw(self.sc)
+                sp.draw(self.bg)
+            self.sc.blit(self.bg, (0, 0))
 
             # после отрисовки всего, переворачиваем экран
-            pygame.display.flip()
+            # pygame.display.flip()
+            pygame.display.update()
 
             # держим цикл на правильной скорости
             pygame.time.Clock().tick(self.fps)
+
+
+class Camera:
+    """
+    Класс, отвечающий за то, что видит пользователь.
+
+    """
+
+    def __init__(self, camera_func, w, h):
+        self.camera_func = camera_func
+        self.state = pygame.Rect(0, 0, w, h)
+
+    def apply(self, obj):
+        """
+        Расстановка всех объектов по их координатам внутри прямоугоольника.
+
+        """
+
+        pass
 
 
 class SpaceMath:
