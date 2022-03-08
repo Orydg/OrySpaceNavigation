@@ -43,11 +43,15 @@ class GUI:
         self.sc = pygame.display.set_mode((self.W, self.H))
 
         # создание видимой части
-        self.bg = pygame.Surface((self.W, self.H))
+        self.bg = pygame.Surface((self.W + 1000, self.H + 1000))
 
         self.event_loop(sm, t)
 
     def event_loop(self, sm, t):
+
+        offset_x = -(self.W + 1000) // 2 + self.W // 2
+        offset_y = -(self.H + 1000) // 2 + self.H // 2
+        key_move = 20
 
         # Ввод процесса (события)
         while True:
@@ -61,6 +65,15 @@ class GUI:
                 # проверить закрытие окна
                 if event.type == pygame.QUIT:
                     exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP:
+                        offset_y += key_move
+                    if event.key == pygame.K_DOWN:
+                        offset_y -= key_move
+                    if event.key == pygame.K_LEFT:
+                        offset_x += key_move
+                    if event.key == pygame.K_RIGHT:
+                        offset_x -= key_move
 
             # Обновление данных
             # sm.tic_tac()
@@ -70,7 +83,7 @@ class GUI:
             for sp in sm.Objects:
                 # sp.draw(self.sc)
                 sp.draw(self.bg)
-            self.sc.blit(self.bg, (0, 0))
+            self.sc.blit(self.bg, (offset_x, offset_y))
 
             # после отрисовки всего, переворачиваем экран
             # pygame.display.flip()
@@ -78,25 +91,6 @@ class GUI:
 
             # держим цикл на правильной скорости
             pygame.time.Clock().tick(self.fps)
-
-
-class Camera:
-    """
-    Класс, отвечающий за то, что видит пользователь.
-
-    """
-
-    def __init__(self, camera_func, w, h):
-        self.camera_func = camera_func
-        self.state = pygame.Rect(0, 0, w, h)
-
-    def apply(self, obj):
-        """
-        Расстановка всех объектов по их координатам внутри прямоугоольника.
-
-        """
-
-        pass
 
 
 class SpaceMath:
@@ -319,13 +313,13 @@ def run():
     # Настройки
     # Размеры окна
     w, h = 1200, 800
-
+    wo, ho = w + 1000, h + 1000
     # запускаем математическую среду
     sm = SpaceMath()
 
     # Начальные координаты
-    x0 = w // 2
-    y0 = h // 2
+    x0 = wo // 2
+    y0 = ho // 2
 
     # создаем объекты
     # Солнце
@@ -342,7 +336,7 @@ def run():
     mass_of_earth = 50000000
     earth = SpaceObjects('Earth', mass_of_earth, 25)
     earth.set_color(pygame.Color('blue'))
-    earth.set_coord(x0 - 100, y0 + 150, 0.5)
+    earth.set_coord(x0 - 100, y0 + 150, 0.35)
 
     # Марс
     # mass_of_mars = ...
@@ -351,8 +345,14 @@ def run():
     mars.set_color(pygame.Color('red'))
     mars.set_coord(x0, y0 - 250, -0.35)
 
+    # Небиру
+    mass_of_nebyru = 75000000
+    nebyru = SpaceObjects('Nebyru', mass_of_nebyru, 25)
+    nebyru.set_color(pygame.Color('violet'))
+    nebyru.set_coord(x0, y0 - 350, -0.15)
+
     # добавляем объекты в математической пространство
-    sm.add_obj(sun, earth, mars)
+    sm.add_obj(sun, earth, mars, nebyru)
 
     # ускорение
     t = 10
