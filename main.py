@@ -42,16 +42,24 @@ class GUI:
         # создание окна
         self.sc = pygame.display.set_mode((self.W, self.H))
 
-        # создание видимой части
+        # создание области отрисовки (может быть больше окна прогарммы)
         self.bg = pygame.Surface((self.W + 1000, self.H + 1000))
 
+        # обработка событий
         self.event_loop(sm, t)
 
     def event_loop(self, sm, t):
 
+        # стартовые смещение камеры (середина области)
         offset_x = -(self.W + 1000) // 2 + self.W // 2
         offset_y = -(self.H + 1000) // 2 + self.H // 2
+        # скорость смещения камеры (пикселей за кадр)
         key_move = 20
+        # флаги направлений смещения камеры
+        offset_up = False
+        offset_down = False
+        offset_left = False
+        offset_right = False
 
         # Ввод процесса (события)
         while True:
@@ -65,15 +73,36 @@ class GUI:
                 # проверить закрытие окна
                 if event.type == pygame.QUIT:
                     exit()
+                # обработка нажатий клавиш
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
-                        offset_y += key_move
+                        offset_up = True
                     if event.key == pygame.K_DOWN:
-                        offset_y -= key_move
+                        offset_down = True
                     if event.key == pygame.K_LEFT:
-                        offset_x += key_move
+                        offset_left = True
                     if event.key == pygame.K_RIGHT:
-                        offset_x -= key_move
+                        offset_right = True
+                # обработка отжатий клавиш
+                elif event.type == pygame.KEYUP:
+                    if event.key == pygame.K_UP:
+                        offset_up = False
+                    if event.key == pygame.K_DOWN:
+                        offset_down = False
+                    if event.key == pygame.K_LEFT:
+                        offset_left = False
+                    if event.key == pygame.K_RIGHT:
+                        offset_right = False
+
+            # смещение камеры
+            if offset_up:
+                offset_y += key_move
+            elif offset_down:
+                offset_y -= key_move
+            elif offset_left:
+                offset_x += key_move
+            elif offset_right:
+                offset_x -= key_move
 
             # Обновление данных
             # sm.tic_tac()
@@ -189,13 +218,18 @@ class SpaceMath:
 
         """
 
+        # Сравниваем каждый объект с каждым (только один раз)
         for n, obj1 in enumerate(self.Objects):
             for j in range(n+1, len(self.Objects)):
                 obj2 = self.Objects[j]
+                # вычисляем силу взаимодействия между двумя объектами
                 force = SpaceMath.gravity_force(obj1, obj2)
+                # выисляем ускорение
                 a1 = force / obj1.Mass
                 a2 = force / obj2.Mass
+                # вычисляем направление действия силы (ускорения)
                 ort_vector = SpaceMath.orientation_from_obj(obj1, obj2)
+                # умножаем модуль ускорения на направление и обновляем состояния объектов
                 obj1.change_coord(t, ax=a1 * ort_vector[0], ay=a1 * ort_vector[1])
                 obj2.change_coord(t, ax=-a2 * ort_vector[0], ay=-a2 * ort_vector[1])
 
