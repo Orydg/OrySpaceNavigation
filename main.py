@@ -34,7 +34,7 @@ class GUI:
         pygame.display.set_caption('OSN')
 
         # ширина и высота окна
-        self.Wscreen, self.Hscreen = 1200, 800
+        self.Wscreen, self.Hscreen = 1920, 1080
 
         # ширина и высота расчетной области
         self.Wbg, self.Hbg = w, h
@@ -47,7 +47,7 @@ class GUI:
         self.fps = 30
 
         # создание окна
-        self.sc = pygame.display.set_mode((self.Wscreen, self.Hscreen))
+        self.sc = pygame.display.set_mode((self.Wscreen, self.Hscreen), pygame.FULLSCREEN)
 
         # создание области отрисовки (может быть больше окна прогарммы)
         self.bg = pygame.Surface((self.Wbg, self.Hbg))
@@ -369,7 +369,7 @@ def run():
     """
     # Настройки
     # Размеры расчетной области
-    w, h = 1500, 1500
+    w, h = 3000, 3000
     # запускаем математическую среду
     sm = SpaceMath()
 
