@@ -34,25 +34,45 @@ class GUI:
         pygame.display.set_caption('OSN')
 
         # ширина и высота окна
-        self.W, self.H = w, h
+        self.Wscreen, self.Hscreen = 1200, 800
+
+        # ширина и высота расчетной области
+        self.Wbg, self.Hbg = w, h
+
+        # стартовые смещение камеры (середина области)
+        self.offset_x = -self.Wbg // 2 + self.Wscreen // 2
+        self.offset_y = -self.Hbg // 2 + self.Hscreen // 2
 
         # количество кадров в секунду
         self.fps = 30
 
         # создание окна
-        self.sc = pygame.display.set_mode((self.W, self.H))
+        self.sc = pygame.display.set_mode((self.Wscreen, self.Hscreen))
 
         # создание области отрисовки (может быть больше окна прогарммы)
-        self.bg = pygame.Surface((self.W + 1000, self.H + 1000))
+        self.bg = pygame.Surface((self.Wbg, self.Hbg))
 
         # обработка событий
         self.event_loop(sm, t)
 
+    def camera_motion_limiter(self):
+        """
+        Метод, который ограничивает движение камеры, границами области отрисовки.
+
+        """
+
+        if self.offset_x >= 0:
+            self.offset_x = 0
+        elif self.offset_x <= -self.Wbg + self.Wscreen:
+            self.offset_x = -self.Wbg + self.Wscreen
+
+        if self.offset_y >= 0:
+            self.offset_y = 0
+        elif self.offset_y <= -self.Hbg + self.Hscreen:
+            self.offset_y = -self.Hbg + self.Hscreen
+
     def event_loop(self, sm, t):
 
-        # стартовые смещение камеры (середина области)
-        offset_x = -(self.W + 1000) // 2 + self.W // 2
-        offset_y = -(self.H + 1000) // 2 + self.H // 2
         # скорость смещения камеры (пикселей за кадр)
         key_move = 20
         # флаги направлений смещения камеры
@@ -65,7 +85,6 @@ class GUI:
         while True:
 
             # обновление фона
-            # self.sc.fill("#000022")
             self.bg.fill("#000022")
 
             # цикл обработки событий
@@ -75,6 +94,8 @@ class GUI:
                     exit()
                 # обработка нажатий клавиш
                 if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
+                        exit()
                     if event.key == pygame.K_UP:
                         offset_up = True
                     if event.key == pygame.K_DOWN:
@@ -96,13 +117,13 @@ class GUI:
 
             # смещение камеры
             if offset_up:
-                offset_y += key_move
+                self.offset_y += key_move
             elif offset_down:
-                offset_y -= key_move
+                self.offset_y -= key_move
             elif offset_left:
-                offset_x += key_move
+                self.offset_x += key_move
             elif offset_right:
-                offset_x -= key_move
+                self.offset_x -= key_move
 
             # Обновление данных
             # sm.tic_tac()
@@ -110,9 +131,11 @@ class GUI:
 
             # Визуализация (сборка)
             for sp in sm.Objects:
-                # sp.draw(self.sc)
                 sp.draw(self.bg)
-            self.sc.blit(self.bg, (offset_x, offset_y))
+            # ограничитель движения камеры - проверка границ
+            self.camera_motion_limiter()
+            # отрисовка видимой области
+            self.sc.blit(self.bg, (self.offset_x, self.offset_y))
 
             # после отрисовки всего, переворачиваем экран
             # pygame.display.flip()
@@ -345,15 +368,14 @@ def run():
     - запускает процесс визуализации
     """
     # Настройки
-    # Размеры окна
-    w, h = 1200, 800
-    wo, ho = w + 1000, h + 1000
+    # Размеры расчетной области
+    w, h = 1500, 1500
     # запускаем математическую среду
     sm = SpaceMath()
 
     # Начальные координаты
-    x0 = wo // 2
-    y0 = ho // 2
+    x0 = w // 2
+    y0 = h // 2
 
     # создаем объекты
     # Солнце
