@@ -14,3 +14,4 @@
 * scipy
 * pygame
 * datetime
+* win32api
