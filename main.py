@@ -131,7 +131,6 @@ class GUI:
                 self.offset_x -= key_move
 
             # Обновление данных
-            # sm.tic_tac()
             sm.gravity_interactions(t)
 
             # Визуализация (сборка)
@@ -183,16 +182,6 @@ class SpaceMath:
 
         # добавить объекты в общий список объектов взаимодействий
         self.Objects += args
-
-    def tic_tac(self):
-        """
-        Метод создан для тестов - изменяет внутреннее состояние объектов в self.Objects с течением времени.
-
-        """
-
-        self.Time += 1/60
-        for obj in self.Objects:
-            obj.change_coord(self.Time)
 
     @staticmethod
     def distance(obj1, obj2, to_orient=False):
