@@ -120,6 +120,11 @@ class GUI:
                     print(event.pos)
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button in [3]:  # ПКМ
                     pass
+                # колесо мыши
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:  # вверх
+                    pass
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 5:  # вниз
+                    pass
 
             # смещение камеры
             if offset_up:
