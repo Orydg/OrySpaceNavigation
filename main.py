@@ -14,6 +14,7 @@
 from scipy.constants import G
 import pygame
 import datetime
+from win32api import GetSystemMetrics
 
 
 class GUI:
@@ -34,7 +35,7 @@ class GUI:
         pygame.display.set_caption('OSN')
 
         # ширина и высота окна
-        self.Wscreen, self.Hscreen = 1600, 900
+        self.Wscreen, self.Hscreen = GetSystemMetrics(0), GetSystemMetrics(1)
 
         # ширина и высота расчетной области
         self.Wbg, self.Hbg = w, h
@@ -347,8 +348,6 @@ class SpaceObjects:
 
         pygame.draw.circle(sc, self.Color, (self.X, self.Y), self.R)
 
-#====================================================================================================
-
 
 def run():
     """
@@ -413,8 +412,6 @@ def run():
     GUI(w, h, sm, t)
 
     # после закрытия окна визуализации, программа останавливается и не производит никаких действий
-
-#====================================================================================================
 
 
 if __name__ == "__main__":
