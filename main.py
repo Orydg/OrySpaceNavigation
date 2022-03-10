@@ -34,7 +34,7 @@ class GUI:
         pygame.display.set_caption('OSN')
 
         # ширина и высота окна
-        self.Wscreen, self.Hscreen = 1920, 1080
+        self.Wscreen, self.Hscreen = 1600, 900
 
         # ширина и высота расчетной области
         self.Wbg, self.Hbg = w, h
@@ -98,29 +98,34 @@ class GUI:
                         exit()
                     if event.key == pygame.K_UP:
                         offset_up = True
-                    if event.key == pygame.K_DOWN:
+                    elif event.key == pygame.K_DOWN:
                         offset_down = True
                     if event.key == pygame.K_LEFT:
                         offset_left = True
-                    if event.key == pygame.K_RIGHT:
+                    elif event.key == pygame.K_RIGHT:
                         offset_right = True
                 # обработка отжатий клавиш
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_UP:
                         offset_up = False
-                    if event.key == pygame.K_DOWN:
+                    elif event.key == pygame.K_DOWN:
                         offset_down = False
                     if event.key == pygame.K_LEFT:
                         offset_left = False
-                    if event.key == pygame.K_RIGHT:
+                    elif event.key == pygame.K_RIGHT:
                         offset_right = False
+                # анализ нажатия кнопок мыши
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button in [1]:  # ЛКМ
+                    print(event.pos)
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button in [3]:  # ПКМ
+                    pass
 
             # смещение камеры
             if offset_up:
                 self.offset_y += key_move
             elif offset_down:
                 self.offset_y -= key_move
-            elif offset_left:
+            if offset_left:
                 self.offset_x += key_move
             elif offset_right:
                 self.offset_x -= key_move
@@ -367,9 +372,11 @@ def run():
     - добавляет SpaceObjects() в SpaceMath()
     - запускает процесс визуализации
     """
+
     # Настройки
     # Размеры расчетной области
     w, h = 3000, 3000
+
     # запускаем математическую среду
     sm = SpaceMath()
 
