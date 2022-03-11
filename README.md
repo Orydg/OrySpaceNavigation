@@ -23,7 +23,10 @@
 
 * установить Git - https://git-scm.com/download/win
 * октрыть консоль Git Bash в нужной папке или в консоли перейти в нее
-* в консоли ввести git clone https://github.com/Orydg/OrySpaceNavigation.git
+* в консоли ввести: 
+```
+git clone https://github.com/Orydg/OrySpaceNavigation.git
+```
 * при помощь IDE среды (например PyCharm https://www.jetbrains.com/pycharm/download/#section=windows) открыть файл main.py
 * запустить выполнение кода
 * готово
