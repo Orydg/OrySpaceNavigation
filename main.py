@@ -148,7 +148,7 @@ class GUI:
 
             # Визуализация (сборка)
             for sp in sm.Objects:
-                sp.draw(self.bg, self.m)
+                sp.draw(self.bg, shift=(self.Wbg//2, self.Hbg//2), m=self.m)
             # ограничитель движения камеры - проверка границ
             self.camera_motion_limiter()
             # отрисовка видимой области
@@ -350,16 +350,17 @@ class SpaceObjects:
 
         self.Color = color
 
-    def draw(self, sc, m=1):
+    def draw(self, sc, shift=(0, 0), m=1):
         """
         Метод отрисовки объекта на плоскости sc.
 
         sc: плоскость для отрсовки объекта.
+        shift: смещение отрисовки
         m: коэффициент масштабирования
 
         """
 
-        pygame.draw.circle(sc, self.Color, (self.X * m, self.Y * m), self.R * m)
+        pygame.draw.circle(sc, self.Color, (self.X * m + shift[0], self.Y * m + shift[1]), self.R * m)
 
 
 def run():
@@ -382,8 +383,8 @@ def run():
     sm = SpaceMath()
 
     # Начальные координаты экрана
-    x0 = w // 2
-    y0 = h // 2
+    x0 = 0
+    y0 = 0
 
     # создаем объекты
     # Солнце
