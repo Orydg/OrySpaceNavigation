@@ -1,6 +1,8 @@
 # научные константы: https://docs.scipy.org/doc/scipy/reference/constants.html
 # цвета в pygame: https://pygame-zero.readthedocs.io/en/latest/colors_ref.html#id2
 # пример создания платформера: https://habr.com/ru/post/193888/
+# визуализация гравитациооного поля: https://habr.com/ru/post/467803/ и https://habr.com/ru/post/470742/
+# создать модуль Vector для расчета силовых полей: https://www.youtube.com/watch?v=PRPDt1ryhOk
 
 
 """
@@ -34,7 +36,7 @@ class GUI:
         # название окна
         pygame.display.set_caption('OSN')
 
-        # ширина и высота окна
+        # ширина и высота окна берутся из системных настроек монитора (для режима FULLSCREEN)
         self.Wscreen, self.Hscreen = GetSystemMetrics(0), GetSystemMetrics(1)
 
         # ширина и высота расчетной области
@@ -47,13 +49,16 @@ class GUI:
         # количество кадров в секунду
         self.fps = 30
 
-        # создание окна
+        # создание пользовательского окна
         self.sc = pygame.display.set_mode((self.Wscreen, self.Hscreen), pygame.FULLSCREEN)
 
         # создание области отрисовки (может быть больше окна прогарммы)
-        self.bg = pygame.Surface((self.Wbg, self.Hbg))
+        self.bg = pygame.Surface((self.Wbg, self.Hbg)).convert()
 
-        # обработка событий
+        # коэффициент масштабирования
+        self.m = 1
+
+        # обработка событий (этот метод в конструкторе идет последним, после него конструктор читает)
         self.event_loop(sm, t)
 
     def camera_motion_limiter(self):
@@ -122,9 +127,11 @@ class GUI:
                     pass
                 # колесо мыши
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:  # вверх
-                    pass
+                    # масштабирование области визуализации (удаление)
+                    self.m /= 1.1
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 5:  # вниз
-                    pass
+                    # масштабирование области визуализации (приближение)
+                    self.m *= 1.1
 
             # смещение камеры
             if offset_up:
@@ -141,7 +148,7 @@ class GUI:
 
             # Визуализация (сборка)
             for sp in sm.Objects:
-                sp.draw(self.bg)
+                sp.draw(self.bg, self.m)
             # ограничитель движения камеры - проверка границ
             self.camera_motion_limiter()
             # отрисовка видимой области
@@ -247,14 +254,14 @@ class SpaceMath:
                 obj2 = self.Objects[j]
                 # вычисляем силу взаимодействия между двумя объектами
                 force = SpaceMath.gravity_force(obj1, obj2)
-                # выисляем ускорение
+                # выисляем ускорение для каждого из двух объектов
                 a1 = force / obj1.Mass
-                a2 = force / obj2.Mass
-                # вычисляем направление действия силы (ускорения)
+                a2 = -force / obj2.Mass  # сила противодействия (знак "-")
+                # вычисляем направление действия силы (ускорения) для каждого из двух объектов
                 ort_vector = SpaceMath.orientation_from_obj(obj1, obj2)
-                # умножаем модуль ускорения на направление и обновляем состояния объектов
+                # умножаем модуль ускорения на направление и обновляем состояния каждого из двух объектов
                 obj1.change_coord(t, ax=a1 * ort_vector[0], ay=a1 * ort_vector[1])
-                obj2.change_coord(t, ax=-a2 * ort_vector[0], ay=-a2 * ort_vector[1])
+                obj2.change_coord(t, ax=a2 * ort_vector[0], ay=a2 * ort_vector[1])
 
 
 class SpaceObjects:
@@ -343,15 +350,16 @@ class SpaceObjects:
 
         self.Color = color
 
-    def draw(self, sc):
+    def draw(self, sc, m=1):
         """
         Метод отрисовки объекта на плоскости sc.
 
         sc: плоскость для отрсовки объекта.
+        m: коэффициент масштабирования
 
         """
 
-        pygame.draw.circle(sc, self.Color, (self.X, self.Y), self.R)
+        pygame.draw.circle(sc, self.Color, (self.X * m, self.Y * m), self.R * m)
 
 
 def run():
@@ -373,7 +381,7 @@ def run():
     # запускаем математическую среду
     sm = SpaceMath()
 
-    # Начальные координаты
+    # Начальные координаты экрана
     x0 = w // 2
     y0 = h // 2
 
