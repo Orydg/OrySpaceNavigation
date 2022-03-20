@@ -56,7 +56,10 @@ class GUI:
         self.bg = pygame.Surface((self.Wbg, self.Hbg)).convert()
 
         # коэффициент масштабирования
-        self.m = 1
+        self.m = 1.6711229946524064e-08
+
+        # флаг паузы
+        self.pause = False
 
         # обработка событий (этот метод в конструкторе идет последним, после него конструктор читает)
         self.event_loop(sm, t)
@@ -102,23 +105,28 @@ class GUI:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
                         exit()
-                    if event.key == pygame.K_UP:
+                    if event.key == pygame.K_UP or event.key == pygame.K_w:
                         offset_up = True
-                    elif event.key == pygame.K_DOWN:
+                    elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
                         offset_down = True
-                    if event.key == pygame.K_LEFT:
+                    if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                         offset_left = True
-                    elif event.key == pygame.K_RIGHT:
+                    elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                         offset_right = True
+                    if event.key == pygame.K_SPACE:
+                        if self.pause:
+                            self.pause = False
+                        else:
+                            self.pause = True
                 # обработка отжатий клавиш
                 elif event.type == pygame.KEYUP:
-                    if event.key == pygame.K_UP:
+                    if event.key == pygame.K_UP or event.key == pygame.K_w:
                         offset_up = False
-                    elif event.key == pygame.K_DOWN:
+                    elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
                         offset_down = False
-                    if event.key == pygame.K_LEFT:
+                    if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                         offset_left = False
-                    elif event.key == pygame.K_RIGHT:
+                    elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                         offset_right = False
                 # анализ нажатия кнопок мыши
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button in [1]:  # ЛКМ
@@ -144,7 +152,8 @@ class GUI:
                 self.offset_x -= key_move
 
             # Обновление данных
-            sm.gravity_interactions(t)
+            if not self.pause:
+                sm.gravity_interactions(t)
 
             # Визуализация (сборка)
             for sp in sm.Objects:
@@ -377,7 +386,7 @@ def run():
 
     # Настройки
     # Размеры расчетной области
-    w, h = 3000, 3000
+    w, h = 5000, 5000
 
     # запускаем математическую среду
     sm = SpaceMath()
@@ -388,39 +397,31 @@ def run():
 
     # создаем объекты
     # Солнце
-    # mass_of_sun = 1.9891 * 10**30
-    mass_of_sun = 1000000000000
-    sun = SpaceObjects('Sun', mass_of_sun, 40)
+    mass_of_sun = 1.9891 * 10**30
+    sun = SpaceObjects('Sun', mass_of_sun,  695990000 * 10**1)
     sun.set_color(pygame.Color('gold'))
     sun.set_coord(x0, y0)
     # Солнце стоит неподвижно и никуда в дальнейшем не сдвинется
     sun.StaticCoord = True
 
     # Земля
-    # mass_of_earth = 5.9722 * 10 ** 24
-    mass_of_earth = 50000000
-    earth = SpaceObjects('Earth', mass_of_earth, 25)
+    mass_of_earth = 5.9722 * 10 ** 24
+    earth = SpaceObjects('Earth', mass_of_earth, 6371302 * 10**3)
     earth.set_color(pygame.Color('blue'))
-    earth.set_coord(x0 - 100, y0 + 150, 0.35)
+    earth.set_coord(149.6 * 10 ** 9, 0, 0, 29765)
 
-    # Марс
-    # mass_of_mars = ...
-    mass_of_mars = 45000000
-    mars = SpaceObjects('Earth', mass_of_mars, 25)
-    mars.set_color(pygame.Color('red'))
-    mars.set_coord(x0, y0 - 250, -0.35)
-
-    # Небиру
-    mass_of_nebyru = 75000000
-    nebyru = SpaceObjects('Nebyru', mass_of_nebyru, 25)
-    nebyru.set_color(pygame.Color('violet'))
-    nebyru.set_coord(x0, y0 - 350, -0.15)
+    # # Марс
+    # # mass_of_mars = ...
+    # mass_of_mars = 45000000
+    # mars = SpaceObjects('Mars', mass_of_mars, 25)
+    # mars.set_color(pygame.Color('red'))
+    # mars.set_coord(x0, y0 - 250, -0.35)
 
     # добавляем объекты в математической пространство
-    sm.add_obj(sun, earth, mars, nebyru)
+    sm.add_obj(sun, earth)#, mars)
 
     # ускорение
-    t = 10
+    t = 100
 
     # запуск визуализации
     GUI(w, h, sm, t)
