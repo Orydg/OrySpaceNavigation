@@ -103,8 +103,10 @@ class GUI:
                     exit()
                 # обработка нажатий клавиш
                 if event.type == pygame.KEYDOWN:
+                    # закрыть программу
                     if event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
                         exit()
+                    # блок перемещения камеры клавиатурой
                     if event.key == pygame.K_UP or event.key == pygame.K_w:
                         offset_up = True
                     elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
@@ -113,13 +115,24 @@ class GUI:
                         offset_left = True
                     elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                         offset_right = True
-                    if event.key == pygame.K_SPACE:
+                    # пауза
+                    if event.key == pygame.K_SPACE or event.key == pygame.K_p:
                         if self.pause:
                             self.pause = False
                         else:
                             self.pause = True
+                    # отрисовка гравитационного поля
+                    if event.key == pygame.K_g and self.pause:
+                        pass
+                        # TODO включить отрисовку гравитационного поля во всей расчетной области или отключить
+                        #  поле должно отрисоваться один раз (протестировать, если не получится,
+                        #  то один раз создать рисунок поля и в цикле его выводить)
+                    if not self.pause:
+                        pass
+                        # TODO если пауза снята, принудительно отключить отрисовку поля гравитации
                 # обработка отжатий клавиш
                 elif event.type == pygame.KEYUP:
+                    # блок перемещения камеры клавиатурой
                     if event.key == pygame.K_UP or event.key == pygame.K_w:
                         offset_up = False
                     elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
@@ -158,6 +171,10 @@ class GUI:
             # Визуализация (сборка)
             for sp in sm.Objects:
                 sp.draw(self.bg, shift=(self.Wbg//2, self.Hbg//2), m=self.m)
+
+            # визуализация паузы
+            # TODO добавить прозрачнуюповерхность с полупрозрачной надписью "ПАУЗА"
+
             # ограничитель движения камеры - проверка границ
             self.camera_motion_limiter()
             # отрисовка видимой области
@@ -289,6 +306,9 @@ class SpaceObjects:
     self.StaticCoord: Логический флаг.
     По умолчанию имеет значение False - координаты объекта можно менять.
     True - координаты объекта статичны, их не изменить методом change_coord().
+    self.CoordFromTime: Логический флаг.
+    По умолчанию имеет значение False - координаты объекта не зависят от времени.
+    True - координаты объекта зависят только от времени, а не от гравитации.
     self.Color: Цвет объекта.
 
     """
@@ -303,6 +323,7 @@ class SpaceObjects:
         self.Ax = None
         self.Ay = None
         self.StaticCoord = False
+        self.CoordFromTime = False
         self.Color = pygame.Color('green')
 
     def set_coord(self, x=0.0, y=0.0, vx=0.0, vy=0.0, ax=0.0, ay=0.0, t=1.0):
@@ -333,7 +354,12 @@ class SpaceObjects:
         """
 
         if self.StaticCoord:
-            self.set_coord(self.X, self.Y)
+            # self.set_coord(self.X, self.Y)
+            # ничего не происходит - при этом флаге координаты объекта статичны (не изменяются)
+            return
+        if self.CoordFromTime:
+            # координаты зависят только от времени
+            # TODO метод перестроения координат по времени (время передается в закон движения по орбите)
             return
         if not x:
             x = self.X
@@ -371,6 +397,10 @@ class SpaceObjects:
 
         pygame.draw.circle(sc, self.Color, (self.X * m + shift[0], self.Y * m + shift[1]), self.R * m)
 
+    # def law_of_orbit(self):
+    # TODO закон движения по орбите для этого небесного объекта
+    #  создать self переменные для параметров орбиты
+
 
 def run():
     """
@@ -391,16 +421,12 @@ def run():
     # запускаем математическую среду
     sm = SpaceMath()
 
-    # Начальные координаты экрана
-    x0 = 0
-    y0 = 0
-
     # создаем объекты
     # Солнце
     mass_of_sun = 1.9891 * 10**30
     sun = SpaceObjects('Sun', mass_of_sun,  695990000 * 10**1)
     sun.set_color(pygame.Color('gold'))
-    sun.set_coord(x0, y0)
+    sun.set_coord(0, 0)
     # Солнце стоит неподвижно и никуда в дальнейшем не сдвинется
     sun.StaticCoord = True
 
@@ -418,7 +444,7 @@ def run():
     # mars.set_coord(x0, y0 - 250, -0.35)
 
     # добавляем объекты в математической пространство
-    sm.add_obj(sun, earth)#, mars)
+    sm.add_obj(sun, earth)
 
     # ускорение
     t = 100
