@@ -28,7 +28,7 @@
 git clone https://github.com/Orydg/OrySpaceNavigation.git
 ```
 * при помощь IDE среды (например PyCharm https://www.jetbrains.com/pycharm/download/#section=windows) открыть файл main.py
-* запустить выполнение кода
+* запустить выполнение кода файла main.py
 * готово
 
 # Активные команды
