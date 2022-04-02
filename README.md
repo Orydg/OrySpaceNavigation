@@ -27,7 +27,7 @@
 ```
 git clone https://github.com/Orydg/OrySpaceNavigation.git
 ```
-* при помощь IDE среды (например PyCharm https://www.jetbrains.com/pycharm/download/#section=windows) открыть файл main.py
+* при помощь IDE среды (например PyCharm https://www.jetbrains.com/pycharm/download/#section=windows) открыть файл osn.py
 * запустить выполнение кода файла osn.py
 * готово
 
