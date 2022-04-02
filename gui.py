@@ -13,7 +13,7 @@ class GUI:
 
     """
 
-    def __init__(self, w, h, space, t=1, fps=30):
+    def __init__(self, w, h, space, t=1, fps=30, m=1.0e-08):
 
         # название окна
         pygame.display.set_caption('OSN')
@@ -38,7 +38,7 @@ class GUI:
         self.bg = pygame.Surface((self.Wbg, self.Hbg)).convert()
 
         # коэффициент масштабирования
-        self.m = 1.6711229946524064e-08
+        self.m = m
 
         # флаг паузы
         self.pause = False

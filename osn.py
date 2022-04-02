@@ -61,7 +61,7 @@ def run():
     space.add_obj(sun, earth)
 
     # запуск визуализации
-    GUI(Settings.w, Settings.h, space, Settings.t, Settings.fps)
+    GUI(Settings.w, Settings.h, space, Settings.t, Settings.fps, Settings.m)
 
     # после закрытия окна визуализации, программа останавливается и не производит никаких действий
 
