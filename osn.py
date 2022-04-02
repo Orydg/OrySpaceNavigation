@@ -15,7 +15,7 @@
 
 import pygame
 from objects import SpaceObjects
-from space import SpaceMath
+from space import Space
 from gui import GUI
 from settings import Settings
 
@@ -26,14 +26,14 @@ def run():
 
     Данная функция:
     - считывает настройки по умолчанию
-    - запускает математическое пространство SpaceMath()
+    - запускает математическое пространство Space()
     - формирует начальные космические объекты SpaceObjects()
-    - добавляет SpaceObjects() в SpaceMath()
+    - добавляет SpaceObjects() в Space()
     - запускает процесс визуализации
     """
 
     # запускаем математическую среду
-    sm = SpaceMath()
+    space = Space()
 
     # создаем объекты
     # Солнце
@@ -58,10 +58,10 @@ def run():
     # mars.set_coord(x0, y0 - 250, -0.35)
 
     # добавляем объекты в математической пространство
-    sm.add_obj(sun, earth)
+    space.add_obj(sun, earth)
 
     # запуск визуализации
-    GUI(Settings.w, Settings.h, sm, Settings.t, Settings.fps)
+    GUI(Settings.w, Settings.h, space, Settings.t, Settings.fps)
 
     # после закрытия окна визуализации, программа останавливается и не производит никаких действий
 

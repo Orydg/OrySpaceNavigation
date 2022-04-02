@@ -13,7 +13,7 @@ class GUI:
 
     """
 
-    def __init__(self, w, h, sm, t=1, fps=30):
+    def __init__(self, w, h, space, t=1, fps=30):
         pygame.init()
 
         # название окна
@@ -45,7 +45,7 @@ class GUI:
         self.pause = False
 
         # обработка событий (этот метод в конструкторе идет последним, после него конструктор читает)
-        self.event_loop(sm, t / fps)
+        self.event_loop(space, t / fps)
 
     def camera_motion_limiter(self):
         """

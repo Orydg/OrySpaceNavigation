@@ -1,7 +1,7 @@
 import datetime
 
 
-class SpaceMath:
+class Space:
     """
     Класс, описывающий математику взаимодействий обектов.
 
@@ -30,7 +30,7 @@ class SpaceMath:
 
         # сначала проверим объекты
         for i in args:
-            assert i.Mass
+            assert i.Mass > 0
 
         # добавить объекты в общий список объектов взаимодействий
         self.Objects += args
