@@ -24,7 +24,7 @@ class SpaceObjects:
     self.Color: Цвет объекта.
 
     """
-    def __init__(self, name, mass, r):
+    def __init__(self, name='', mass=0, r=0):
         self.Name = name
         self.Mass = mass
         self.R = r

@@ -14,7 +14,6 @@ class GUI:
     """
 
     def __init__(self, w, h, space, t=1, fps=30):
-        pygame.init()
 
         # название окна
         pygame.display.set_caption('OSN')

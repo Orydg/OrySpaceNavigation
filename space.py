@@ -1,4 +1,5 @@
 import datetime
+from objects import SpaceObjects
 
 
 class Space:
@@ -30,7 +31,9 @@ class Space:
 
         # сначала проверим объекты
         for i in args:
-            assert i.Mass > 0
+            assert type(i) is SpaceObjects, f"Передаваемый объект: '{i}' является объектом {type(i)}, " \
+                                            f"а должент быть объектом <class 'SpaceObjects'>."
+            assert i.Mass > 0, f"Объект {i} обладает некорректной массой: {i.Mass}."
 
         # добавить объекты в общий список объектов взаимодействий
         self.Objects += args
