@@ -14,10 +14,10 @@
 
 
 import pygame
-from SpaceObjects import SpaceObjects
-from SpaceMath import SpaceMath
-from GUI import GUI
-from Settings import Settings
+from objects import SpaceObjects
+from space import SpaceMath
+from gui import GUI
+from settings import Settings
 
 
 def run():
@@ -61,7 +61,7 @@ def run():
     sm.add_obj(sun, earth)
 
     # запуск визуализации
-    GUI(Settings.w, Settings.h, sm, Settings.t)
+    GUI(Settings.w, Settings.h, sm, Settings.t, Settings.fps)
 
     # после закрытия окна визуализации, программа останавливается и не производит никаких действий
 

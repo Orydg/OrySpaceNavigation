@@ -13,7 +13,7 @@ class GUI:
 
     """
 
-    def __init__(self, w, h, sm, t):
+    def __init__(self, w, h, sm, t=1, fps=30):
         pygame.init()
 
         # название окна
@@ -30,7 +30,7 @@ class GUI:
         self.offset_y = -self.Hbg // 2 + self.Hscreen // 2
 
         # количество кадров в секунду
-        self.fps = 30
+        self.fps = fps
 
         # создание пользовательского окна
         self.sc = pygame.display.set_mode((self.Wscreen, self.Hscreen), pygame.FULLSCREEN)
@@ -45,7 +45,7 @@ class GUI:
         self.pause = False
 
         # обработка событий (этот метод в конструкторе идет последним, после него конструктор читает)
-        self.event_loop(sm, t)
+        self.event_loop(sm, t / fps)
 
     def camera_motion_limiter(self):
         """
