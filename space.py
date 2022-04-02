@@ -1,5 +1,4 @@
 import datetime
-from scipy.constants import G
 
 
 class SpaceMath:
@@ -36,50 +35,6 @@ class SpaceMath:
         # добавить объекты в общий список объектов взаимодействий
         self.Objects += args
 
-    @staticmethod
-    def distance(obj1, obj2, to_orient=False):
-        """
-        Метод измеряет дистанцию между двумя объектами obj1 и obj2 (модуль вектора между ними).
-
-        obj1: Объект класса SpaceObjects.
-        obj2: Объект класса SpaceObjects.
-        to_orient: Логический флаг, по умолчанию имеет значение False. Если True, метод возвращает ортогональный вектор.
-
-        """
-
-        x1, y1 = obj1.get_coord()
-        x2, y2 = obj2.get_coord()
-        dist = ((x2 - x1)**2 + (y2 - y1)**2)**0.5
-        if to_orient:
-            x = x2 - x1
-            y = y2 - y1
-            return [x / dist, y / dist]
-        return dist
-
-    @staticmethod
-    def gravity_force(obj1, obj2):
-        """
-        Метод возвращает модуль силы между двумя объектами obj1 и obj2.
-
-        obj1: Объект класса SpaceObjects.
-        obj2: Объект класса SpaceObjects.
-
-        """
-
-        return G * obj1.Mass * obj2.Mass / SpaceMath.distance(obj1, obj2)**2
-
-    @staticmethod
-    def orientation_from_obj(obj1, obj2):
-        """
-        Метод возвращает ортогональный вектор между двумя объектами obj1 и obj2.
-
-        obj1: Объект класса SpaceObjects.
-        obj2: Объект класса SpaceObjects.
-
-        """
-
-        return SpaceMath.distance(obj1, obj2, True)
-
     def gravity_interactions(self, t):
         """
         Метод анализирует гравитационное взаимодействие между всеми обектами в self.Objects.
@@ -93,12 +48,12 @@ class SpaceMath:
             for j in range(n+1, len(self.Objects)):
                 obj2 = self.Objects[j]
                 # вычисляем силу взаимодействия между двумя объектами
-                force = SpaceMath.gravity_force(obj1, obj2)
+                force = obj1.gravity_force(obj2)
                 # выисляем ускорение для каждого из двух объектов
                 a1 = force / obj1.Mass
                 a2 = -force / obj2.Mass  # сила противодействия (знак "-")
                 # вычисляем направление действия силы (ускорения) для каждого из двух объектов
-                ort_vector = SpaceMath.orientation_from_obj(obj1, obj2)
+                ort_vector = obj1.orientation_to_obj(obj2)
                 # умножаем модуль ускорения на направление и обновляем состояния каждого из двух объектов
                 obj1.change_coord(t, ax=a1 * ort_vector[0], ay=a1 * ort_vector[1])
                 obj2.change_coord(t, ax=a2 * ort_vector[0], ay=a2 * ort_vector[1])

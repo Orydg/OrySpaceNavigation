@@ -1,4 +1,5 @@
 import pygame
+from scipy.constants import G
 
 
 class SpaceObjects:
@@ -107,6 +108,40 @@ class SpaceObjects:
         """
 
         pygame.draw.circle(sc, self.Color, (self.X * m + shift[0], self.Y * m + shift[1]), self.R * m)
+
+    def distance_to(self, obj, to_orient=False):
+        """
+        Метод измеряет дистанцию до объекта obj (модуль вектора).
+
+        obj: Объект класса SpaceObjects.
+        to_orient: Логический флаг, по умолчанию имеет значение False. Если True, метод возвращает ортогональный вектор.
+
+        """
+
+        dist = ((obj.X - self.X)**2 + (obj.Y - self.Y)**2)**0.5
+        if to_orient:
+            return [(obj.X - self.X) / dist, (obj.Y - self.Y) / dist]
+        return dist
+
+    def orientation_to_obj(self, obj):
+        """
+        Метод возвращает ортогональный вектор в направлении obj.
+
+        obj: Объект класса SpaceObjects.
+
+        """
+
+        return self.distance_to(obj, True)
+
+    def gravity_force(self, obj):
+        """
+        Метод возвращает модуль силы притяжения с объектом obj.
+
+        obj: Объект класса SpaceObjects.
+
+        """
+
+        return G * self.Mass * obj.Mass / self.distance_to(obj)**2
 
     # def law_of_orbit(self):
     # TODO закон движения по орбите для этого небесного объекта
