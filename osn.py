@@ -4,6 +4,8 @@
 # визуализация гравитациооного поля: https://habr.com/ru/post/467803/ и https://habr.com/ru/post/470742/
 # создать модуль Vector для расчета силовых полей: https://www.youtube.com/watch?v=PRPDt1ryhOk
 
+# учебные материалы - алгоритмы Python: https://youtube.com/playlist?list=PLRDzFCPr95fK7tr47883DFUbm4GeOjjc0
+
 
 """
 Используемая система измерени: https://metrob.ru/html/ed_izmer/Sist_SI.html
