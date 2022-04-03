@@ -5,8 +5,6 @@
 
 from space import Space
 from objects import SpaceObjects
-from gui import GUI
-from settings import Settings
 
 
 class Test:
