@@ -10,6 +10,8 @@
 расстояния:         м - метры
 весс:               кг - килограммы
 время:              с - секунды
+сила:               Н - ньютоны
+
 """
 
 
@@ -38,7 +40,7 @@ def run():
     # создаем объекты
     # Солнце
     mass_of_sun = 1.9891 * 10**30
-    sun = SpaceObjects('Sun', mass_of_sun,  695990000 * 10**1)
+    sun = SpaceObjects('Sun', mass_of_sun,  695990000 * 10**1)  # TODO убрать доп множитель 10**1
     sun.set_color(pygame.Color('gold'))
     sun.set_coord(0, 0)
     # Солнце стоит неподвижно и никуда в дальнейшем не сдвинется
@@ -46,7 +48,7 @@ def run():
 
     # Земля
     mass_of_earth = 5.9722 * 10 ** 24
-    earth = SpaceObjects('Earth', mass_of_earth, 6371302 * 10**3)
+    earth = SpaceObjects('Earth', mass_of_earth, 6371302 * 10**3)  # TODO убрать доп множитель 10**3
     earth.set_color(pygame.Color('blue'))
     earth.set_coord(149.6 * 10 ** 9, 0, 0, 29765)
 

@@ -52,7 +52,19 @@ class Test:
 
         """
 
-        pass
+        # создали объект класса для тестов
+        object_test = SpaceObjects('Earth', 5.9722 * 10 ** 24, 6371302)
+
+        # проверка v1 на корректность
+        assert round(object_test.first_cosmic_velocity() / 1000, 1) == 7.9
+
+        # проверка v1 при неправильном радиусе
+        try:
+            object_test_v1 = SpaceObjects('Earth', 5.9722 * 10 ** 24, 0)
+            object_test_v1.first_cosmic_velocity()
+            raise Exception(f"SpaceObjects.first_cosmic_velocity() прочитал объект с некорретным радиусом")
+        except AssertionError:
+            pass
 
 
 if __name__ == "__main__":
