@@ -89,10 +89,10 @@ class SpaceObjects:
 
     """
 
-    def __init__(self, name='', mass=0, r=0):
+    def __init__(self, name='', mass=0, r=0):  # TODO добавить методы чтения массы и радиуса - убрать из инит
         self.Name = name
         self.Mass = mass
-        self.R = r
+        self.R = r  # TODO сделать класс "планеты" и там будет этот парамтр
         self.X = None
         self.Y = None
         self.Vx = None
@@ -275,4 +275,3 @@ class Aircraft(SpaceObjects):
     """
 
     pass
-
