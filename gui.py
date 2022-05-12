@@ -97,6 +97,12 @@ class GUI:
         # основная кнопка меню
         self.draw_button('Меню', 50, 50, 115, 58)
 
+        # отрисовка сообщения о паузе
+        if self.pause:
+            self.print_text('ПАУЗА',
+                            -70 + self.width_screen // 2,
+                            -25 + self.height_screen // 2)
+
     def camera_motion_limiter(self):
         """
         Метод, который ограничивает движение камеры, границами области отрисовки.
