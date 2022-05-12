@@ -76,21 +76,26 @@ class GUI:
 
         """
 
+        # отслеживание позиции курсора
         mouse = pygame.mouse.get_pos()
-        click = pygame.mouse.get_pressed()
 
+        # отрисовка фона кнопки
         if (x < mouse[0] < x + width) and (y < mouse[1] < y + height):
             pygame.draw.rect(self.sc, active_color, (x, y, width, height))
         else:
             pygame.draw.rect(self.sc, inactive_color, (x, y, width, height))
+
+        # отрисовка текста кнопки
+        self.print_text(message, x, y)
 
     def menu(self):
         """
         Отображение меню пользователя.
 
         """
-        self.draw_button('TEST', -52 + self.width_screen // 2, self.height_screen // 2, 110, 58)
-        self.print_text('TEST', -50 + self.width_screen // 2, self.height_screen // 2)
+
+        # основная кнопка меню
+        self.draw_button('Меню', 50, 50, 115, 58)
 
     def camera_motion_limiter(self):
         """
