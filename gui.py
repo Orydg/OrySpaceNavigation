@@ -5,43 +5,6 @@ from win32api import GetSystemMetrics
 pygame.init()
 
 
-class Button:
-    """
-    Кнопки меню
-
-    width - ширина кнопки
-    height - высота кнопки
-    display - плоскость для отрисовки кнопки
-    inactive_color - цвет неактивной кнопки
-    active_color - цвет активной кнопки
-
-    """
-
-    def __init__(self, width, height, display, inactive_color, active_color):
-        self.width = width
-        self.height = height
-        self.display = display
-        self.inactive_color = inactive_color
-        self.active_color = active_color
-
-    def draw(self, x, y, message, action=None):
-        """
-        Отрисовка кнопки на экране.
-
-        x, y - координаты кнопки
-        message - сообщение
-
-        """
-
-        mouse = pygame.mouse.get_pos()
-        click = pygame.mouse.get_pressed()
-
-        if (x < mouse[0] < x + self.width) and (y < mouse[1] < y + self.height):
-            pygame.draw.rect(self.display, self.active_color, (x, y, self.width, self.height))
-        else:
-            pygame.draw.rect(self.display, self.inactive_color, (x, y, self.width, self.height))
-
-
 class GUI:
     """
     Класс, отвечающий за визуализацию
@@ -99,6 +62,35 @@ class GUI:
         font_type = pygame.font.Font(font_type, font_size)
         text = font_type.render(message, True, font_color)
         self.sc.blit(text, (x, y))
+
+    def draw_button(self, message,
+                    x, y, width, height,
+                    inactive_color=pygame.Color('steelblue'),
+                    active_color=pygame.Color('deepskyblue')):
+        """
+        Отрисовка кнопки на экране.
+
+        x, y - координаты кнопки
+        width, height - ширина и высота кнопки
+        message - сообщение
+
+        """
+
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+
+        if (x < mouse[0] < x + width) and (y < mouse[1] < y + height):
+            pygame.draw.rect(self.sc, active_color, (x, y, width, height))
+        else:
+            pygame.draw.rect(self.sc, inactive_color, (x, y, width, height))
+
+    def menu(self):
+        """
+        Отображение меню пользователя.
+
+        """
+        self.draw_button('TEST', -52 + self.width_screen // 2, self.height_screen // 2, 110, 58)
+        self.print_text('TEST', -50 + self.width_screen // 2, self.height_screen // 2)
 
     def camera_motion_limiter(self):
         """
@@ -217,8 +209,8 @@ class GUI:
             # отрисовка видимой области
             self.sc.blit(self.bg, (self.offset_x, self.offset_y))
 
-            # отрисовка неподвижного текста
-            self.print_text('TEST',   -50 + self.width_screen // 2, self.height_screen // 2)
+            # отрисовка меню пользователя
+            self.menu()
 
             # после отрисовки всего, переворачиваем экран
             # pygame.display.flip()
