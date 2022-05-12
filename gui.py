@@ -2,6 +2,46 @@ import pygame
 from win32api import GetSystemMetrics
 
 
+pygame.init()
+
+
+class Button:
+    """
+    Кнопки меню
+
+    width - ширина кнопки
+    height - высота кнопки
+    display - плоскость для отрисовки кнопки
+    inactive_color - цвет неактивной кнопки
+    active_color - цвет активной кнопки
+
+    """
+
+    def __init__(self, width, height, display, inactive_color, active_color):
+        self.width = width
+        self.height = height
+        self.display = display
+        self.inactive_color = inactive_color
+        self.active_color = active_color
+
+    def draw(self, x, y, message, action=None):
+        """
+        Отрисовка кнопки на экране.
+
+        x, y - координаты кнопки
+        message - сообщение
+
+        """
+
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+
+        if (x < mouse[0] < x + self.width) and (y < mouse[1] < y + self.height):
+            pygame.draw.rect(self.display, self.active_color, (x, y, self.width, self.height))
+        else:
+            pygame.draw.rect(self.display, self.inactive_color, (x, y, self.width, self.height))
+
+
 class GUI:
     """
     Класс, отвечающий за визуализацию
@@ -15,29 +55,29 @@ class GUI:
 
     """
 
-    def __init__(self, w, h, space, t=1, fps=30, m=1.0e-08):
+    def __init__(self, width, height, space, t=1, fps=30, m=1.0e-08):
 
         # название окна
         pygame.display.set_caption('OSN')
 
         # ширина и высота окна берутся из системных настроек монитора (для режима FULLSCREEN)
-        self.Wscreen, self.Hscreen = GetSystemMetrics(0), GetSystemMetrics(1)
+        self.width_screen, self.height_screen = GetSystemMetrics(0), GetSystemMetrics(1)
 
         # ширина и высота расчетной области
-        self.Wbg, self.Hbg = w, h
+        self.width_bg, self.height_bg = width, height
 
         # стартовые смещение камеры (середина области)
-        self.offset_x = -self.Wbg // 2 + self.Wscreen // 2
-        self.offset_y = -self.Hbg // 2 + self.Hscreen // 2
+        self.offset_x = -self.width_bg // 2 + self.width_screen // 2
+        self.offset_y = -self.height_bg // 2 + self.height_screen // 2
 
         # количество кадров в секунду
         self.fps = fps
 
         # создание пользовательского окна
-        self.sc = pygame.display.set_mode((self.Wscreen, self.Hscreen), pygame.FULLSCREEN)
+        self.sc = pygame.display.set_mode((self.width_screen, self.height_screen), pygame.FULLSCREEN)
 
         # создание области отрисовки (может быть больше окна прогарммы)
-        self.bg = pygame.Surface((self.Wbg, self.Hbg)).convert()
+        self.bg = pygame.Surface((self.width_bg, self.height_bg)).convert()
 
         # коэффициент масштабирования
         self.m = m
@@ -48,6 +88,18 @@ class GUI:
         # обработка событий (этот метод в конструкторе идет последним, после него конструктор читает)
         self.event_loop(space, t / fps)
 
+    def print_text(self, message, x, y, font_color=(255, 255, 255),
+                   font_type=pygame.font.match_font(pygame.font.get_fonts()[0]),
+                   font_size=50):
+        """
+        Метод отображения текста на экране
+
+        """
+
+        font_type = pygame.font.Font(font_type, font_size)
+        text = font_type.render(message, True, font_color)
+        self.sc.blit(text, (x, y))
+
     def camera_motion_limiter(self):
         """
         Метод, который ограничивает движение камеры, границами области отрисовки.
@@ -56,13 +108,13 @@ class GUI:
 
         if self.offset_x >= 0:
             self.offset_x = 0
-        elif self.offset_x <= -self.Wbg + self.Wscreen:
-            self.offset_x = -self.Wbg + self.Wscreen
+        elif self.offset_x <= -self.width_bg + self.width_screen:
+            self.offset_x = -self.width_bg + self.width_screen
 
         if self.offset_y >= 0:
             self.offset_y = 0
-        elif self.offset_y <= -self.Hbg + self.Hscreen:
-            self.offset_y = -self.Hbg + self.Hscreen
+        elif self.offset_y <= -self.height_bg + self.height_screen:
+            self.offset_y = -self.height_bg + self.height_screen
 
     def event_loop(self, sm, t):
 
@@ -154,7 +206,7 @@ class GUI:
 
             # Визуализация (сборка)
             for sp in sm.Objects:
-                sp.draw(self.bg, shift=(self.Wbg//2, self.Hbg//2), m=self.m)
+                sp.draw(self.bg, shift=(self.width_bg // 2, self.height_bg // 2), m=self.m)
                 # TODO планеты и ракеты в реальном масштабе не видно - нужно придумать коэф-ты маштабирования визуалки
 
             # визуализация паузы
@@ -164,6 +216,9 @@ class GUI:
             self.camera_motion_limiter()
             # отрисовка видимой области
             self.sc.blit(self.bg, (self.offset_x, self.offset_y))
+
+            # отрисовка неподвижного текста
+            self.print_text('TEST',   -50 + self.width_screen // 2, self.height_screen // 2)
 
             # после отрисовки всего, переворачиваем экран
             # pygame.display.flip()
