@@ -91,6 +91,16 @@ class GUI:
         # основная кнопка меню
         self.draw_button('Меню', 50, 50, 115, 58)
 
+        # нижняя строка состояния
+        size_text = self.height_screen * 0.03
+        pygame.draw.rect(self.sc, pygame.Color('lavender'),
+                         (0, self.height_screen - size_text,
+                          self.width_screen, self.height_screen))
+        self.print_text(f'Коэф. масш.: {self.m:1.3g}',
+                        5, self.height_screen - size_text,
+                        font_size=int(size_text),
+                        font_color=(0, 0, 0))
+
         # отрисовка сообщения о паузе
         if self.pause:
             self.print_text('ПАУЗА',
