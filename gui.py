@@ -18,7 +18,7 @@ class GUI:
 
     """
 
-    def __init__(self, width, height, space, t=1, fps=30, m=1.0e-08):
+    def __init__(self, space, t=1, fps=30, m=1.0e-08):
 
         # название окна
         pygame.display.set_caption('OSN')
@@ -26,21 +26,15 @@ class GUI:
         # ширина и высота окна берутся из системных настроек монитора (для режима FULLSCREEN)
         self.width_screen, self.height_screen = GetSystemMetrics(0), GetSystemMetrics(1)
 
-        # ширина и высота расчетной области
-        self.width_bg, self.height_bg = width, height
-
         # стартовые смещение камеры (середина области)
-        self.offset_x = -self.width_bg // 2 + self.width_screen // 2
-        self.offset_y = -self.height_bg // 2 + self.height_screen // 2
+        self.offset_x = self.width_screen // 2
+        self.offset_y = self.height_screen // 2
 
         # количество кадров в секунду
         self.fps = fps
 
         # создание пользовательского окна
         self.sc = pygame.display.set_mode((self.width_screen, self.height_screen), pygame.FULLSCREEN)
-
-        # создание области отрисовки (может быть больше окна прогарммы)
-        self.bg = pygame.Surface((self.width_bg, self.height_bg)).convert()
 
         # коэффициент масштабирования
         self.m = m
@@ -103,22 +97,6 @@ class GUI:
                             -70 + self.width_screen // 2,
                             -25 + self.height_screen // 2)
 
-    def camera_motion_limiter(self):
-        """
-        Метод, который ограничивает движение камеры, границами области отрисовки.
-
-        """
-
-        if self.offset_x >= 0:
-            self.offset_x = 0
-        elif self.offset_x <= -self.width_bg + self.width_screen:
-            self.offset_x = -self.width_bg + self.width_screen
-
-        if self.offset_y >= 0:
-            self.offset_y = 0
-        elif self.offset_y <= -self.height_bg + self.height_screen:
-            self.offset_y = -self.height_bg + self.height_screen
-
     def event_loop(self, sm, t):
 
         # скорость смещения камеры (пикселей за кадр)
@@ -133,7 +111,7 @@ class GUI:
         while True:
 
             # обновление фона
-            self.bg.fill("#000022")
+            self.sc.fill(pygame.Color('#000020'))
 
             # цикл обработки событий
             for event in pygame.event.get():
@@ -208,17 +186,9 @@ class GUI:
                 sm.gravity_interactions(t)
 
             # Визуализация (сборка)
-            for sp in sm.Objects:
-                sp.draw(self.bg, shift=(self.width_bg // 2, self.height_bg // 2), m=self.m)
+            for object_in_space in sm.Objects:
+                object_in_space.draw(self.sc, shift=(self.offset_x, self.offset_y), m=self.m)
                 # TODO планеты и ракеты в реальном масштабе не видно - нужно придумать коэф-ты маштабирования визуалки
-
-            # визуализация паузы
-            # TODO добавить прозрачную поверхность с полупрозрачной надписью "ПАУЗА"
-
-            # ограничитель движения камеры - проверка границ
-            self.camera_motion_limiter()
-            # отрисовка видимой области
-            self.sc.blit(self.bg, (self.offset_x, self.offset_y))
 
             # отрисовка меню пользователя
             self.menu()
