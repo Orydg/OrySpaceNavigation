@@ -91,8 +91,66 @@ class GUI:
 
         """
 
-        # основная кнопка меню
-        self.draw_button('Меню', 50, 50, 115, 58)
+        # отслеживание позиции курсора
+        mouse = pygame.mouse.get_pos()
+
+        # левая стенка меню
+        width_menu = self.width_screen * 0.105
+        pygame.draw.rect(self.sc, pygame.Color('gray'),
+                         (0, 0,
+                         width_menu, self.height_screen))
+
+        # название меню
+        height_line_1 = int(self.height_screen * 0.03)
+        self.print_text("Основное меню", 0, 0,
+                        font_size=height_line_1,
+                        font_color=(0, 0, 0))
+
+        # кнопки меню
+        # очистить расчетную область
+        # отрисовка фона кнопки
+        height_line_2 = height_line_1 + int(self.height_screen * 0.03)
+        if (0 < mouse[0] < width_menu) and (height_line_1 < mouse[1] < height_line_2):
+            pygame.draw.rect(self.sc, pygame.Color('deepskyblue'),
+                             (0, height_line_1, width_menu, height_line_1))
+        else:
+            pygame.draw.rect(self.sc, pygame.Color('steelblue'),
+                             (0, height_line_1, width_menu, height_line_1))
+
+        # отрисовка текста кнопки
+        self.print_text("Очистить", 2, height_line_1 - 5,
+                        font_size=height_line_1,
+                        font_color=(0, 0, 0))
+
+        # выбрать режим
+        # отрисовка фона кнопки
+        height_line_3 = height_line_2 + int(self.height_screen * 0.03)
+        if (0 < mouse[0] < width_menu) and (height_line_2 < mouse[1] < height_line_3):
+            pygame.draw.rect(self.sc, pygame.Color('deepskyblue'),
+                             (0, height_line_2, width_menu, height_line_1))
+        else:
+            pygame.draw.rect(self.sc, pygame.Color('steelblue'),
+                             (0, height_line_2, width_menu, height_line_1))
+
+        # отрисовка текста кнопки
+        self.print_text("Выбрать режим", 2, height_line_2 - 5,
+                        font_size=height_line_1,
+                        font_color=(0, 0, 0))
+
+        # добавить обект -> тип объекта -> заполнить параметры объекта
+        # отрисовка фона кнопки
+        height_line_4 = height_line_3 + int(self.height_screen * 0.03)
+        if (0 < mouse[0] < width_menu) and (height_line_3 < mouse[1] < height_line_4):
+            pygame.draw.rect(self.sc, pygame.Color('deepskyblue'),
+                             (0, height_line_3, width_menu, height_line_1))
+        else:
+            pygame.draw.rect(self.sc, pygame.Color('steelblue'),
+                             (0, height_line_3, width_menu, height_line_1))
+
+        # отрисовка текста кнопки
+        self.print_text("Добавить обект", 2, height_line_3 - 5,
+                        font_size=height_line_1,
+                        font_color=(0, 0, 0))
 
         # нижняя строка состояния
         size_text = self.height_screen * 0.03
