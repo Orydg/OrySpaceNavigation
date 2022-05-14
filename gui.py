@@ -42,6 +42,9 @@ class GUI:
         # флаг паузы
         self.pause = False
 
+        # флаг отображения меню
+        self.menu_on = True
+
         # обработка событий (этот метод в конструкторе идет последним, после него конструктор читает)
         self.event_loop(space, t / fps)
 
@@ -125,14 +128,18 @@ class GUI:
 
             # цикл обработки событий
             for event in pygame.event.get():
+
                 # проверить закрытие окна
                 if event.type == pygame.QUIT:
                     exit()
+
                 # обработка нажатий клавиш
                 if event.type == pygame.KEYDOWN:
+
                     # закрыть программу
                     if event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
                         exit()
+
                     # блок перемещения камеры клавиатурой
                     if event.key == pygame.K_UP or event.key == pygame.K_w:
                         offset_up = True
@@ -142,12 +149,21 @@ class GUI:
                         offset_left = True
                     elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                         offset_right = True
+
+                    # отображение меню
+                    if event.key == pygame.K_F12:
+                        if self.menu_on:
+                            self.menu_on = False
+                        else:
+                            self.menu_on = True
+
                     # пауза
                     if event.key == pygame.K_SPACE or event.key == pygame.K_p:
                         if self.pause:
                             self.pause = False
                         else:
                             self.pause = True
+
                     # отрисовка гравитационного поля
                     if event.key == pygame.K_g and self.pause:
                         pass
@@ -157,8 +173,10 @@ class GUI:
                     if not self.pause:
                         pass
                         # TODO если пауза снята, принудительно отключить отрисовку поля гравитации
+
                 # обработка отжатий клавиш
                 elif event.type == pygame.KEYUP:
+
                     # блок перемещения камеры клавиатурой
                     if event.key == pygame.K_UP or event.key == pygame.K_w:
                         offset_up = False
@@ -168,16 +186,21 @@ class GUI:
                         offset_left = False
                     elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                         offset_right = False
+
                 # анализ нажатия кнопок мыши
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button in [1]:  # ЛКМ
                     print(event.pos)
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button in [3]:  # ПКМ
                     pass
+
                 # колесо мыши
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:  # вверх
+
                     # масштабирование области визуализации (удаление)
                     self.m /= 1.1
+
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 5:  # вниз
+
                     # масштабирование области визуализации (приближение)
                     self.m *= 1.1
 
@@ -201,7 +224,8 @@ class GUI:
                 # TODO планеты и ракеты в реальном масштабе не видно - нужно придумать коэф-ты маштабирования визуалки
 
             # отрисовка меню пользователя
-            self.menu()
+            if self.menu_on:
+                self.menu()
 
             # после отрисовки всего, переворачиваем экран
             # pygame.display.flip()
