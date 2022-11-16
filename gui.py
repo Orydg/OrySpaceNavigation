@@ -163,6 +163,14 @@ class GUI:
                         font_size=int(size_text),
                         font_color=(0, 0, 0))
 
+        # Поле для отображения меню
+        pygame.draw.rect(self.sc, pygame.Color('lavender'),
+                         (self.width_screen * 0.2, self.height_screen * 0.2,
+                          self.width_screen * 0.6, self.height_screen * 0.6))
+        pygame.draw.rect(self.sc, pygame.Color('midnightblue'),
+                         (self.width_screen * 0.2, self.height_screen * 0.2,
+                          self.width_screen * 0.6, self.height_screen * 0.6), 10)
+
     def event_loop(self, sm, t):
 
         # скорость смещения камеры (пикселей за кадр)
