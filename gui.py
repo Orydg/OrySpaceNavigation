@@ -94,7 +94,7 @@ class GUI:
         # отслеживание позиции курсора
         mouse = pygame.mouse.get_pos()
 
-        # левая стенка меню
+        '''# левая стенка меню
         width_menu = self.width_screen * 0.105
         pygame.draw.rect(self.sc, pygame.Color('gray'),
                          (0, 0,
@@ -151,6 +151,7 @@ class GUI:
         self.print_text("Добавить обект", 2, height_line_3 - 5,
                         font_size=height_line_1,
                         font_color=(0, 0, 0))
+        # кнопка: центрирование камеры - возвращает камеру на исходную позицию'''
 
         # нижняя строка состояния
         size_text = self.height_screen * 0.03
@@ -161,12 +162,6 @@ class GUI:
                         5, self.height_screen - size_text,
                         font_size=int(size_text),
                         font_color=(0, 0, 0))
-
-        # отрисовка сообщения о паузе
-        if self.pause:
-            self.print_text('ПАУЗА',
-                            -70 + self.width_screen // 2,
-                            -25 + self.height_screen // 2)
 
     def event_loop(self, sm, t):
 
@@ -209,7 +204,7 @@ class GUI:
                         offset_right = True
 
                     # отображение меню
-                    if event.key == pygame.K_F12:
+                    if event.key == pygame.K_TAB:
                         if self.menu_on:
                             self.menu_on = False
                         else:
@@ -280,6 +275,12 @@ class GUI:
             for object_in_space in sm.Objects:
                 object_in_space.draw(self.sc, shift=(self.offset_x, self.offset_y), m=self.m)
                 # TODO планеты и ракеты в реальном масштабе не видно - нужно придумать коэф-ты маштабирования визуалки
+
+            # отрисовка сообщения о паузе
+            if self.pause:
+                self.print_text('ПАУЗА',
+                                -75 + self.width_screen // 2,
+                                -25 + self.height_screen // 2)
 
             # отрисовка меню пользователя
             if self.menu_on:
