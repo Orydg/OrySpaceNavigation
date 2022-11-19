@@ -85,6 +85,17 @@ class GUI:
         # отрисовка текста кнопки
         self.print_text(message, x, y)
 
+    def string_of_status(self):
+        # нижняя строка состояния
+        size_text = self.height_screen * 0.03
+        pygame.draw.rect(self.sc, pygame.Color('lavender'),
+                         (0, self.height_screen - size_text,
+                          self.width_screen, self.height_screen))
+        self.print_text(f'Коэф. масш.: {self.m:1.3g}',
+                        5, self.height_screen - size_text,
+                        font_size=int(size_text),
+                        font_color=(0, 0, 0))
+
     def menu(self):
         """
         Отображение меню пользователя.
@@ -94,12 +105,7 @@ class GUI:
         # отслеживание позиции курсора
         mouse = pygame.mouse.get_pos()
 
-        '''# левая стенка меню
-        width_menu = self.width_screen * 0.105
-        pygame.draw.rect(self.sc, pygame.Color('gray'),
-                         (0, 0,
-                         width_menu, self.height_screen))
-
+        '''
         # название меню
         height_line_1 = int(self.height_screen * 0.03)
         self.print_text("Основное меню", 0, 0,
@@ -153,16 +159,6 @@ class GUI:
                         font_color=(0, 0, 0))
         # кнопка: центрирование камеры - возвращает камеру на исходную позицию'''
 
-        # нижняя строка состояния
-        size_text = self.height_screen * 0.03
-        pygame.draw.rect(self.sc, pygame.Color('lavender'),
-                         (0, self.height_screen - size_text,
-                          self.width_screen, self.height_screen))
-        self.print_text(f'Коэф. масш.: {self.m:1.3g}',
-                        5, self.height_screen - size_text,
-                        font_size=int(size_text),
-                        font_color=(0, 0, 0))
-
         # Поле для отображения меню
         pygame.draw.rect(self.sc, pygame.Color('lavender'),
                          (self.width_screen * 0.2, self.height_screen * 0.2,
@@ -171,17 +167,29 @@ class GUI:
                          (self.width_screen * 0.2, self.height_screen * 0.2,
                           self.width_screen * 0.6, self.height_screen * 0.6), 10)
 
+        # кнопки меню
+        # очистить расчетную область
+        # отрисовка фона кнопки
+        # height_line = 10 + int(self.height_screen * 0.03)
+        # if (self.width_screen * 0.2 < mouse[0] < self.width_screen * 0.8) and (10 < mouse[1] < height_line):
+        #     pygame.draw.rect(self.sc, pygame.Color('deepskyblue'),
+        #                      (0, height_line_1, width_menu, height_line_1))
+        # else:
+        #     pygame.draw.rect(self.sc, pygame.Color('steelblue'),
+        #                      (0, height_line_1, width_menu, height_line_1))
+
     def event_loop(self, sm, t):
 
         # скорость смещения камеры (пикселей за кадр)
         key_move = 20
+
         # флаги направлений смещения камеры
         offset_up = False
         offset_down = False
         offset_left = False
         offset_right = False
 
-        # Ввод процесса (события)
+        # Обработка событий
         while True:
 
             # обновление фона
@@ -279,7 +287,7 @@ class GUI:
             if not self.pause:
                 sm.gravity_interactions(t)
 
-            # Визуализация (сборка)
+            # Визуализация объектов
             for object_in_space in sm.Objects:
                 object_in_space.draw(self.sc, shift=(self.offset_x, self.offset_y), m=self.m)
                 # TODO планеты и ракеты в реальном масштабе не видно - нужно придумать коэф-ты маштабирования визуалки
@@ -293,6 +301,9 @@ class GUI:
             # отрисовка меню пользователя
             if self.menu_on:
                 self.menu()
+
+            # отрисовка статусной строки
+            self.string_of_status()
 
             # после отрисовки всего, переворачиваем экран
             # pygame.display.flip()
