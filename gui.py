@@ -43,7 +43,7 @@ class GUI:
         self.pause = False
 
         # флаг отображения меню
-        self.menu_on = True
+        self.menu_on = False
 
         # обработка событий (этот метод в конструкторе идет последним, после него конструктор читает)
         self.event_loop(space, t / fps)
@@ -105,60 +105,6 @@ class GUI:
         # отслеживание позиции курсора
         mouse = pygame.mouse.get_pos()
 
-        '''
-        # название меню
-        height_line_1 = int(self.height_screen * 0.03)
-        self.print_text("Основное меню", 0, 0,
-                        font_size=height_line_1,
-                        font_color=(0, 0, 0))
-
-        # кнопки меню
-        # очистить расчетную область
-        # отрисовка фона кнопки
-        height_line_2 = height_line_1 + int(self.height_screen * 0.03)
-        if (0 < mouse[0] < width_menu) and (height_line_1 < mouse[1] < height_line_2):
-            pygame.draw.rect(self.sc, pygame.Color('deepskyblue'),
-                             (0, height_line_1, width_menu, height_line_1))
-        else:
-            pygame.draw.rect(self.sc, pygame.Color('steelblue'),
-                             (0, height_line_1, width_menu, height_line_1))
-
-        # отрисовка текста кнопки
-        self.print_text("Очистить", 2, height_line_1 - 5,
-                        font_size=height_line_1,
-                        font_color=(0, 0, 0))
-
-        # выбрать режим
-        # отрисовка фона кнопки
-        height_line_3 = height_line_2 + int(self.height_screen * 0.03)
-        if (0 < mouse[0] < width_menu) and (height_line_2 < mouse[1] < height_line_3):
-            pygame.draw.rect(self.sc, pygame.Color('deepskyblue'),
-                             (0, height_line_2, width_menu, height_line_1))
-        else:
-            pygame.draw.rect(self.sc, pygame.Color('steelblue'),
-                             (0, height_line_2, width_menu, height_line_1))
-
-        # отрисовка текста кнопки
-        self.print_text("Выбрать режим", 2, height_line_2 - 5,
-                        font_size=height_line_1,
-                        font_color=(0, 0, 0))
-
-        # добавить обект -> тип объекта -> заполнить параметры объекта
-        # отрисовка фона кнопки
-        height_line_4 = height_line_3 + int(self.height_screen * 0.03)
-        if (0 < mouse[0] < width_menu) and (height_line_3 < mouse[1] < height_line_4):
-            pygame.draw.rect(self.sc, pygame.Color('deepskyblue'),
-                             (0, height_line_3, width_menu, height_line_1))
-        else:
-            pygame.draw.rect(self.sc, pygame.Color('steelblue'),
-                             (0, height_line_3, width_menu, height_line_1))
-
-        # отрисовка текста кнопки
-        self.print_text("Добавить обект", 2, height_line_3 - 5,
-                        font_size=height_line_1,
-                        font_color=(0, 0, 0))
-        # кнопка: центрирование камеры - возвращает камеру на исходную позицию'''
-
         # Поле для отображения меню
         pygame.draw.rect(self.sc, pygame.Color('lavender'),
                          (self.width_screen * 0.2, self.height_screen * 0.2,
@@ -169,14 +115,11 @@ class GUI:
 
         # кнопки меню
         # очистить расчетную область
-        # отрисовка фона кнопки
-        # height_line = 10 + int(self.height_screen * 0.03)
-        # if (self.width_screen * 0.2 < mouse[0] < self.width_screen * 0.8) and (10 < mouse[1] < height_line):
-        #     pygame.draw.rect(self.sc, pygame.Color('deepskyblue'),
-        #                      (0, height_line_1, width_menu, height_line_1))
-        # else:
-        #     pygame.draw.rect(self.sc, pygame.Color('steelblue'),
-        #                      (0, height_line_1, width_menu, height_line_1))
+        clear_button = pygame.rect.Rect(self.width_screen / 2 - 20, self.height_screen / 2 - 20, 40, 40)
+        if clear_button.collidepoint(mouse):
+            pygame.draw.rect(self.sc, pygame.Color('red'), clear_button)
+        else:
+            pygame.draw.rect(self.sc, pygame.Color('blue'), clear_button)
 
     def event_loop(self, sm, t):
 
