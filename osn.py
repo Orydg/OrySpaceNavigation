@@ -20,7 +20,7 @@
 import pygame
 from objects import SpaceObjects
 from space import Space
-from gui import GUI
+from main_cycle import MainLoop
 from settings import Settings
 
 
@@ -64,8 +64,8 @@ def run():
     # добавляем объекты в математической пространство
     space.add_obj(sun, earth)
 
-    # запуск визуализации
-    GUI(space, Settings.t, Settings.fps, Settings.m)
+    # запуск основного цикла
+    MainLoop(space, Settings.t, Settings.fps, Settings.m)
 
     # после закрытия окна визуализации, программа останавливается и не производит никаких действий
 

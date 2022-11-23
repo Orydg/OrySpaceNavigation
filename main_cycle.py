@@ -1,11 +1,21 @@
+"""
+Основной цикл.
+
+Внутри основного цикла есть три основных операции:
+обработка событий, обновление состояния и отрисовка текущего состояния на экране.
+
+"""
+
+
 import pygame
+from camera import Camera
 from win32api import GetSystemMetrics
 
 
 pygame.init()
 
 
-class GUI:
+class MainLoop:
     """
     Класс, отвечающий за визуализацию
 
@@ -27,6 +37,7 @@ class GUI:
         self.width_screen, self.height_screen = GetSystemMetrics(0), GetSystemMetrics(1)
 
         # стартовые смещение камеры (середина области)
+        self.camera = Camera(self.width_screen // 2, self.height_screen // 2)
         self.offset_x = self.width_screen // 2
         self.offset_y = self.height_screen // 2
 
@@ -36,8 +47,14 @@ class GUI:
         # создание пользовательского окна
         self.sc = pygame.display.set_mode((self.width_screen, self.height_screen), pygame.FULLSCREEN)
 
+        # расчетное пространство
+        self.sm = space
+
         # коэффициент масштабирования
         self.m = m
+
+        # Время
+        self.t = t / self.fps
 
         # флаг паузы
         self.pause = False
@@ -45,8 +62,42 @@ class GUI:
         # флаг отображения меню
         self.menu_on = False
 
-        # обработка событий (этот метод в конструкторе идет последним, после него конструктор читает)
-        self.event_loop(space, t / fps)
+        # Список обрабатываемых объектов
+        self.objects = []
+
+        # обработка событий (этот метод в конструкторе идет последним, после него конструктор не читает)
+        self.event_loop()
+
+    def update(self):
+        if not self.pause:
+            self.sm.gravity_interactions(self.t)
+
+    def draw(self):
+        """
+        У каждого объекта вызывается метод для отрисовки.
+        Визиализация прочих элементов
+
+        """
+        # Визуализация объектов
+        for object_in_space in self.sm.Objects:
+            object_in_space.draw(self.sc, shift=(self.offset_x, self.offset_y), m=self.m)
+            # TODO планеты и ракеты в реальном масштабе не видно - нужно придумать коэф-ты маштабирования визуалки
+
+        # отрисовка сообщения о паузе
+        if self.pause:
+            self.print_text('ПАУЗА',
+                            -75 + self.width_screen // 2,
+                            -25 + self.height_screen // 2)
+
+        # отрисовка меню пользователя
+        if self.menu_on:
+            self.menu()
+
+        # отрисовка статусной строки
+        self.string_of_status()
+
+    def handle_events(self):
+        pass
 
     def print_text(self, message, x, y, font_color=(255, 255, 255),
                    font_type=pygame.font.match_font(pygame.font.get_fonts()[0]),
@@ -121,7 +172,7 @@ class GUI:
         else:
             pygame.draw.rect(self.sc, pygame.Color('blue'), clear_button)
 
-    def event_loop(self, sm, t):
+    def event_loop(self):
 
         # скорость смещения камеры (пикселей за кадр)
         key_move = 20
@@ -227,26 +278,10 @@ class GUI:
                 self.offset_x -= key_move
 
             # Обновление данных
-            if not self.pause:
-                sm.gravity_interactions(t)
+            self.update()
 
             # Визуализация объектов
-            for object_in_space in sm.Objects:
-                object_in_space.draw(self.sc, shift=(self.offset_x, self.offset_y), m=self.m)
-                # TODO планеты и ракеты в реальном масштабе не видно - нужно придумать коэф-ты маштабирования визуалки
-
-            # отрисовка сообщения о паузе
-            if self.pause:
-                self.print_text('ПАУЗА',
-                                -75 + self.width_screen // 2,
-                                -25 + self.height_screen // 2)
-
-            # отрисовка меню пользователя
-            if self.menu_on:
-                self.menu()
-
-            # отрисовка статусной строки
-            self.string_of_status()
+            self.draw()
 
             # после отрисовки всего, переворачиваем экран
             # pygame.display.flip()
