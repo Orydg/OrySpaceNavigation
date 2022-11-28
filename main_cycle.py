@@ -78,8 +78,7 @@ class MainLoop:
 
     def draw(self):
         """
-        У каждого объекта вызывается метод для отрисовки.
-        Визиализация прочих элементов
+        Метод отрисовки сцены и объектов сцены.
 
         """
 
@@ -103,6 +102,10 @@ class MainLoop:
 
         # отрисовка статусной строки
         self.string_of_status()
+
+        # после отрисовки всего, переворачиваем экран
+        # pygame.display.flip()
+        pygame.display.update()
 
     def handle_events(self):
         # цикл обработки событий
@@ -182,6 +185,9 @@ class MainLoop:
 
                 # масштабирование области визуализации (приближение)
                 self.m *= 1.1
+
+        # держим цикл на правильной скорости
+        pygame.time.Clock().tick(self.fps)
 
     def print_text(self, message, x, y, font_color=(255, 255, 255),
                    font_type=pygame.font.match_font(pygame.font.get_fonts()[0]),
@@ -282,10 +288,3 @@ class MainLoop:
 
             # Визуализация объектов
             self.draw()
-
-            # после отрисовки всего, переворачиваем экран
-            # pygame.display.flip()
-            pygame.display.update()
-
-            # держим цикл на правильной скорости
-            pygame.time.Clock().tick(self.fps)
