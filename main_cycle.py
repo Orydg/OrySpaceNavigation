@@ -8,7 +8,6 @@
 
 
 import pygame
-from camera import Camera
 from win32api import GetSystemMetrics
 
 
@@ -37,7 +36,6 @@ class MainLoop:
         self.width_screen, self.height_screen = GetSystemMetrics(0), GetSystemMetrics(1)
 
         # стартовые смещение камеры (середина области)
-        self.camera = Camera(self.width_screen // 2, self.height_screen // 2)
         self.offset_x = self.width_screen // 2
         self.offset_y = self.height_screen // 2
 
@@ -65,6 +63,12 @@ class MainLoop:
         # Список обрабатываемых объектов
         self.objects = []
 
+        # флаги направлений смещения камеры
+        self.offset_up = False
+        self.offset_down = False
+        self.offset_left = False
+        self.offset_right = False
+
         # обработка событий (этот метод в конструкторе идет последним, после него конструктор не читает)
         self.event_loop()
 
@@ -78,6 +82,10 @@ class MainLoop:
         Визиализация прочих элементов
 
         """
+
+        # обновление фона
+        self.sc.fill(pygame.Color('#000020'))
+
         # Визуализация объектов
         for object_in_space in self.sm.Objects:
             object_in_space.draw(self.sc, shift=(self.offset_x, self.offset_y), m=self.m)
@@ -97,7 +105,83 @@ class MainLoop:
         self.string_of_status()
 
     def handle_events(self):
-        pass
+        # цикл обработки событий
+        for event in pygame.event.get():
+
+            # проверить закрытие окна
+            if event.type == pygame.QUIT:
+                exit()
+
+            # обработка нажатий клавиш
+            if event.type == pygame.KEYDOWN:
+
+                # закрыть программу
+                if event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
+                    exit()
+
+                # блок перемещения камеры клавиатурой
+                if event.key == pygame.K_UP or event.key == pygame.K_w:
+                    self.offset_up = True
+                elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
+                    self.offset_down = True
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                    self.offset_left = True
+                elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                    self.offset_right = True
+
+                # отображение меню
+                if event.key == pygame.K_TAB:
+                    if self.menu_on:
+                        self.menu_on = False
+                    else:
+                        self.menu_on = True
+
+                # пауза
+                if event.key == pygame.K_SPACE or event.key == pygame.K_p:
+                    if self.pause:
+                        self.pause = False
+                    else:
+                        self.pause = True
+
+                # отрисовка гравитационного поля
+                if event.key == pygame.K_g and self.pause:
+                    pass
+                    # TODO включить отрисовку гравитационного поля во всей расчетной области или отключить
+                    #  поле должно отрисоваться один раз (протестировать, если не получится,
+                    #  то один раз создать рисунок поля и в цикле его выводить)
+                if not self.pause:
+                    pass
+                    # TODO если пауза снята, принудительно отключить отрисовку поля гравитации
+
+            # обработка отжатий клавиш
+            elif event.type == pygame.KEYUP:
+
+                # блок перемещения камеры клавиатурой
+                if event.key == pygame.K_UP or event.key == pygame.K_w:
+                    self.offset_up = False
+                elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
+                    self.offset_down = False
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                    self.offset_left = False
+                elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                    self.offset_right = False
+
+            # анализ нажатия кнопок мыши
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button in [1]:  # ЛКМ
+                print(event.pos)
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button in [3]:  # ПКМ
+                pass
+
+            # колесо мыши
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:  # вверх
+
+                # масштабирование области визуализации (удаление)
+                self.m /= 1.1
+
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 5:  # вниз
+
+                # масштабирование области визуализации (приближение)
+                self.m *= 1.1
 
     def print_text(self, message, x, y, font_color=(255, 255, 255),
                    font_type=pygame.font.match_font(pygame.font.get_fonts()[0]),
@@ -177,104 +261,20 @@ class MainLoop:
         # скорость смещения камеры (пикселей за кадр)
         key_move = 20
 
-        # флаги направлений смещения камеры
-        offset_up = False
-        offset_down = False
-        offset_left = False
-        offset_right = False
-
         # Обработка событий
         while True:
 
-            # обновление фона
-            self.sc.fill(pygame.Color('#000020'))
-
             # цикл обработки событий
-            for event in pygame.event.get():
-
-                # проверить закрытие окна
-                if event.type == pygame.QUIT:
-                    exit()
-
-                # обработка нажатий клавиш
-                if event.type == pygame.KEYDOWN:
-
-                    # закрыть программу
-                    if event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
-                        exit()
-
-                    # блок перемещения камеры клавиатурой
-                    if event.key == pygame.K_UP or event.key == pygame.K_w:
-                        offset_up = True
-                    elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                        offset_down = True
-                    if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                        offset_left = True
-                    elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                        offset_right = True
-
-                    # отображение меню
-                    if event.key == pygame.K_TAB:
-                        if self.menu_on:
-                            self.menu_on = False
-                        else:
-                            self.menu_on = True
-
-                    # пауза
-                    if event.key == pygame.K_SPACE or event.key == pygame.K_p:
-                        if self.pause:
-                            self.pause = False
-                        else:
-                            self.pause = True
-
-                    # отрисовка гравитационного поля
-                    if event.key == pygame.K_g and self.pause:
-                        pass
-                        # TODO включить отрисовку гравитационного поля во всей расчетной области или отключить
-                        #  поле должно отрисоваться один раз (протестировать, если не получится,
-                        #  то один раз создать рисунок поля и в цикле его выводить)
-                    if not self.pause:
-                        pass
-                        # TODO если пауза снята, принудительно отключить отрисовку поля гравитации
-
-                # обработка отжатий клавиш
-                elif event.type == pygame.KEYUP:
-
-                    # блок перемещения камеры клавиатурой
-                    if event.key == pygame.K_UP or event.key == pygame.K_w:
-                        offset_up = False
-                    elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
-                        offset_down = False
-                    if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                        offset_left = False
-                    elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                        offset_right = False
-
-                # анализ нажатия кнопок мыши
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button in [1]:  # ЛКМ
-                    print(event.pos)
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button in [3]:  # ПКМ
-                    pass
-
-                # колесо мыши
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:  # вверх
-
-                    # масштабирование области визуализации (удаление)
-                    self.m /= 1.1
-
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 5:  # вниз
-
-                    # масштабирование области визуализации (приближение)
-                    self.m *= 1.1
+            self.handle_events()
 
             # смещение камеры
-            if offset_up:
+            if self.offset_up:
                 self.offset_y += key_move
-            elif offset_down:
+            elif self.offset_down:
                 self.offset_y -= key_move
-            if offset_left:
+            if self.offset_left:
                 self.offset_x += key_move
-            elif offset_right:
+            elif self.offset_right:
                 self.offset_x -= key_move
 
             # Обновление данных

@@ -10,6 +10,7 @@ class Space:
     Time - время
 
     """
+
     def __init__(self):
         self.Objects = []
         self.StartTime = datetime.datetime(2000, 1, 1)
