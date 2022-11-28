@@ -1,4 +1,5 @@
 import pygame
+from settings import Settings
 from scipy.constants import G
 
 
@@ -171,6 +172,12 @@ class SpaceObjects:
 
         self.Color = color
 
+    def set_r(self, m, min_r=Settings.min_r):
+        if self.R * m > min_r:
+            return self.R * m
+        else:
+            return min_r
+
     def draw(self, sc, shift=(0, 0), m=1):
         """
         Метод отрисовки объекта на плоскости sc.
@@ -181,7 +188,7 @@ class SpaceObjects:
 
         """
 
-        pygame.draw.circle(sc, self.Color, (self.X * m + shift[0], self.Y * m + shift[1]), self.R * m)
+        pygame.draw.circle(sc, self.Color, (self.X * m + shift[0], self.Y * m + shift[1]), self.set_r(m))
 
     def distance_to(self, obj, to_orient=False):
         """
