@@ -1,5 +1,7 @@
 import datetime
+import csv
 from objects import SpaceObjects
+from settings import Settings
 
 
 class Space:
@@ -61,3 +63,31 @@ class Space:
                 # умножаем модуль ускорения на направление и обновляем состояния каждого из двух объектов
                 obj1.change_coord(t, ax=a1 * ort_vector[0], ay=a1 * ort_vector[1])
                 obj2.change_coord(t, ax=a2 * ort_vector[0], ay=a2 * ort_vector[1])
+
+    def save_obj(self):
+        """
+        Метод сохранения объектов и их состояния.
+
+        """
+        file_name = "save1.csv"
+        with open(Settings.path + file_name, mode="w") as file:
+            names = ["Название", "Масса", "Радиус", "X", "Y", "Vx", "Vy", "Ax", "Ay",
+                     "Статические координаты", "Зависит от времени", "Цвет"]
+            file_writer = csv.writer(file,
+                                     delimiter=";",
+                                     lineterminator="\r")
+            file_writer.writerow(names)
+            for o in self.Objects:
+
+                file_writer.writerow(list(map(str, [o.Name,
+                                                    o.Mass,
+                                                    o.R,
+                                                    o.X,
+                                                    o.Y,
+                                                    o.Vx,
+                                                    o.Vy,
+                                                    o.Ax,
+                                                    o.Ay,
+                                                    o.StaticCoord,
+                                                    o.CoordFromTime,
+                                                    o.Color])))
