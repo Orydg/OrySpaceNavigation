@@ -9,6 +9,7 @@
 
 import pygame
 from win32api import GetSystemMetrics
+from settings import Settings
 
 
 pygame.init()
@@ -82,6 +83,79 @@ class MainLoop:
 
         """
 
+        def print_text(message, x, y, font_color=(255, 255, 255),
+                       font_type=pygame.font.match_font(pygame.font.get_fonts()[0]),
+                       font_size=50):
+            """
+            Метод отображения текста на экране
+
+            """
+
+            font_type = pygame.font.Font(font_type, font_size)
+            text = font_type.render(message, True, font_color)
+            self.sc.blit(text, (x, y))
+
+        def draw_button(message,
+                        x, y, width, height,
+                        inactive_color=pygame.Color('steelblue'),
+                        active_color=pygame.Color('deepskyblue')):
+            """
+            Отрисовка кнопки на экране.
+
+            x, y - координаты кнопки
+            width, height - ширина и высота кнопки
+            message - сообщение
+
+            """
+
+            # отслеживание позиции курсора
+            mouse = pygame.mouse.get_pos()
+
+            # отрисовка фона кнопки
+            if (x < mouse[0] < x + width) and (y < mouse[1] < y + height):
+                pygame.draw.rect(self.sc, active_color, (x, y, width, height))
+            else:
+                pygame.draw.rect(self.sc, inactive_color, (x, y, width, height))
+
+            # отрисовка текста кнопки
+            print_text(message, x, y)
+
+        def string_of_status():
+            # нижняя строка состояния
+            size_text = self.height_screen * 0.03
+            pygame.draw.rect(self.sc, pygame.Color('lavender'),
+                             (0, self.height_screen - size_text,
+                              self.width_screen, self.height_screen))
+            print_text(f'Коэф. масш.: {self.m:1.3g}',
+                       5, self.height_screen - size_text,
+                       font_size=int(size_text),
+                       font_color=(0, 0, 0))
+
+        def menu():
+            """
+            Отображение меню пользователя.
+
+            """
+
+            # отслеживание позиции курсора
+            mouse = pygame.mouse.get_pos()
+
+            # Поле для отображения меню
+            pygame.draw.rect(self.sc, pygame.Color('lavender'),
+                             (self.width_screen * 0.2, self.height_screen * 0.2,
+                              self.width_screen * 0.6, self.height_screen * 0.6))
+            pygame.draw.rect(self.sc, pygame.Color('midnightblue'),
+                             (self.width_screen * 0.2, self.height_screen * 0.2,
+                              self.width_screen * 0.6, self.height_screen * 0.6), 10)
+
+            # кнопки меню
+            # очистить расчетную область
+            clear_button = pygame.rect.Rect(self.width_screen / 2 - 20, self.height_screen / 2 - 20, 40, 40)
+            if clear_button.collidepoint(mouse):
+                pygame.draw.rect(self.sc, pygame.Color('red'), clear_button)
+            else:
+                pygame.draw.rect(self.sc, pygame.Color('blue'), clear_button)
+
         # обновление фона
         self.sc.fill(pygame.Color('#000020'))
 
@@ -92,16 +166,16 @@ class MainLoop:
 
         # отрисовка сообщения о паузе
         if self.pause:
-            self.print_text('ПАУЗА',
-                            -75 + self.width_screen // 2,
-                            -25 + self.height_screen // 2)
+            print_text('ПАУЗА',
+                       -75 + self.width_screen // 2,
+                       -25 + self.height_screen // 2)
 
         # отрисовка меню пользователя
         if self.menu_on:
-            self.menu()
+            menu()
 
         # отрисовка статусной строки
-        self.string_of_status()
+        string_of_status()
 
         # после отрисовки всего, переворачиваем экран
         # pygame.display.flip()
@@ -189,83 +263,10 @@ class MainLoop:
         # держим цикл на правильной скорости
         pygame.time.Clock().tick(self.fps)
 
-    def print_text(self, message, x, y, font_color=(255, 255, 255),
-                   font_type=pygame.font.match_font(pygame.font.get_fonts()[0]),
-                   font_size=50):
-        """
-        Метод отображения текста на экране
-
-        """
-
-        font_type = pygame.font.Font(font_type, font_size)
-        text = font_type.render(message, True, font_color)
-        self.sc.blit(text, (x, y))
-
-    def draw_button(self, message,
-                    x, y, width, height,
-                    inactive_color=pygame.Color('steelblue'),
-                    active_color=pygame.Color('deepskyblue')):
-        """
-        Отрисовка кнопки на экране.
-
-        x, y - координаты кнопки
-        width, height - ширина и высота кнопки
-        message - сообщение
-
-        """
-
-        # отслеживание позиции курсора
-        mouse = pygame.mouse.get_pos()
-
-        # отрисовка фона кнопки
-        if (x < mouse[0] < x + width) and (y < mouse[1] < y + height):
-            pygame.draw.rect(self.sc, active_color, (x, y, width, height))
-        else:
-            pygame.draw.rect(self.sc, inactive_color, (x, y, width, height))
-
-        # отрисовка текста кнопки
-        self.print_text(message, x, y)
-
-    def string_of_status(self):
-        # нижняя строка состояния
-        size_text = self.height_screen * 0.03
-        pygame.draw.rect(self.sc, pygame.Color('lavender'),
-                         (0, self.height_screen - size_text,
-                          self.width_screen, self.height_screen))
-        self.print_text(f'Коэф. масш.: {self.m:1.3g}',
-                        5, self.height_screen - size_text,
-                        font_size=int(size_text),
-                        font_color=(0, 0, 0))
-
-    def menu(self):
-        """
-        Отображение меню пользователя.
-
-        """
-
-        # отслеживание позиции курсора
-        mouse = pygame.mouse.get_pos()
-
-        # Поле для отображения меню
-        pygame.draw.rect(self.sc, pygame.Color('lavender'),
-                         (self.width_screen * 0.2, self.height_screen * 0.2,
-                          self.width_screen * 0.6, self.height_screen * 0.6))
-        pygame.draw.rect(self.sc, pygame.Color('midnightblue'),
-                         (self.width_screen * 0.2, self.height_screen * 0.2,
-                          self.width_screen * 0.6, self.height_screen * 0.6), 10)
-
-        # кнопки меню
-        # очистить расчетную область
-        clear_button = pygame.rect.Rect(self.width_screen / 2 - 20, self.height_screen / 2 - 20, 40, 40)
-        if clear_button.collidepoint(mouse):
-            pygame.draw.rect(self.sc, pygame.Color('red'), clear_button)
-        else:
-            pygame.draw.rect(self.sc, pygame.Color('blue'), clear_button)
-
     def event_loop(self):
 
         # скорость смещения камеры (пикселей за кадр)
-        key_move = 20
+        key_move = Settings.key_move
 
         # Обработка событий
         while True:
