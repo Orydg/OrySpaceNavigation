@@ -91,3 +91,31 @@ class Space:
                                                     o.StaticCoord,
                                                     o.CoordFromTime,
                                                     o.Color])))
+
+        return True
+
+    def load_obj(self, file_name):
+        """
+        Метод загрузки объектов.
+
+        """
+
+        with open(Settings.path + file_name) as r_file:
+            # Создаем объект reader, указываем символ-разделитель ";"
+            file_reader = csv.DictReader(r_file, delimiter=";")
+            # Считывание данных из CSV файла
+            self.Objects = []  # очистили список объектов для последующей замены
+            for o in file_reader:
+                so = SpaceObjects(o["Название"], eval(o["Масса"]), eval(o["Радиус"]))
+                so.X = eval(o["X"])
+                so.Y = eval(o["Y"])
+                so.Vx = eval(o["Vx"])
+                so.Vy = eval(o["Vy"])
+                so.Ax = eval(o["Ax"])
+                so.Ay = eval(o["Ay"])
+                so.StaticCoord = eval(o["Статические координаты"])
+                so.CoordFromTime = eval(o["Зависит от времени"])
+                so.Color = eval(o["Цвет"])
+                self.Objects += [so]
+
+            return True

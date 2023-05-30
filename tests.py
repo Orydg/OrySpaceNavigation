@@ -29,6 +29,7 @@ class Test:
 
         # создали объект класса для тестов
         space = Space()
+        object_test = SpaceObjects('Earth', 5.9722 * 10 ** 24, 6371302)
 
         # ввод стороннего объекта
         try:
@@ -43,6 +44,18 @@ class Test:
             raise Exception(f"Space.add_obj() прочитал объект с некорретной массой")
         except AssertionError:
             pass
+
+        # сохранение
+        space = Space()
+        space.add_obj(object_test)
+        assert space.save_obj()
+
+        # загрузка
+        space1 = Space()
+        assert space1.load_obj("save1.csv")
+        space2 = Space()
+        space2.add_obj(object_test)
+        assert space1.Objects[0].Name == space2.Objects[0].Name
 
     def test_objects(self):
         """
