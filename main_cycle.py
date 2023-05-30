@@ -70,6 +70,9 @@ class MainLoop:
         self.offset_left = False
         self.offset_right = False
 
+        # отслеживание позиции курсора
+        self.mouse = []
+
         # обработка событий (этот метод в конструкторе идет последним, после него конструктор не читает)
         self.event_loop()
 
@@ -137,9 +140,6 @@ class MainLoop:
 
             """
 
-            # отслеживание позиции курсора
-            mouse = pygame.mouse.get_pos()
-
             # Поле для отображения меню
             pygame.draw.rect(self.sc, pygame.Color('lavender'),
                              (self.width_screen * 0.2, self.height_screen * 0.2,
@@ -151,13 +151,16 @@ class MainLoop:
             # кнопки меню
             # очистить расчетную область
             clear_button = pygame.rect.Rect(self.width_screen / 2 - 20, self.height_screen / 2 - 20, 40, 40)
-            if clear_button.collidepoint(mouse):
+            if clear_button.collidepoint(self.mouse):
                 pygame.draw.rect(self.sc, pygame.Color('red'), clear_button)
             else:
                 pygame.draw.rect(self.sc, pygame.Color('blue'), clear_button)
 
         # обновление фона
         self.sc.fill(pygame.Color('#000020'))
+
+        # отслеживание позиции курсора
+        self.mouse = pygame.mouse.get_pos()
 
         # Визуализация объектов
         for object_in_space in self.sm.Objects:
