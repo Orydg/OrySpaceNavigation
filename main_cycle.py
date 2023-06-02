@@ -10,7 +10,7 @@
 import pygame
 import pygame_widgets
 from win32api import GetSystemMetrics
-from settings import Settings, Buttons
+from settings import Settings
 from pygame_widgets.button import ButtonArray
 
 
