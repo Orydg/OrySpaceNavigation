@@ -86,9 +86,12 @@ class MainLoop:
             (1, 4),  # Shape: 2 buttons wide, 2 buttons tall
             border=50,  # Distance between buttons and edge of array
             # Sets the texts of each button (counts left to right then top to bottom)
-            texts=('Очистить список объектов', '2', '3', '4'),
+            texts=('Очистить список объектов', 'SAVE', 'LOAD', '4'),
             # When clicked, print number
-            onClicks=(self.sm.clear_objects, lambda: print('2'), lambda: print('3'), lambda: print('4'))
+            onClicks=(self.sm.clear_objects,
+                      self.sm.save_obj,
+                      lambda: self.sm.load_obj(file_name="save1.csv"),
+                      lambda: print('4'))
         )
 
         # обработка событий (этот метод в конструкторе идет последним, после него конструктор не читает)
