@@ -8,8 +8,10 @@
 
 
 import pygame
+import pygame_widgets
 from win32api import GetSystemMetrics
 from settings import Settings, Buttons
+from pygame_widgets.button import ButtonArray
 
 
 pygame.init()
@@ -55,6 +57,9 @@ class MainLoop:
         # Время
         self.t = t / self.fps
 
+        # События
+        self.events = None
+
         # флаг паузы
         self.pause = False
 
@@ -70,13 +75,21 @@ class MainLoop:
         self.offset_left = False
         self.offset_right = False
 
-        # отслеживание позиции курсора
-        self.mouse = []
-
         # Создание кнопок
-        self.clear_space_button = Buttons(self.sm.clear_objects,
-                                          pygame.rect.Rect(self.width_screen / 2 - 20,
-                                                           self.height_screen / 2 - 20, 40, 40))
+        self.MenuButtonArray = ButtonArray(
+            # Mandatory Parameters
+            self.sc,  # Surface to place button array on
+            self.width_screen * 0.2,  # X-coordinate
+            self.height_screen * 0.2,  # Y-coordinate
+            self.width_screen * 0.6,  # Width
+            self.height_screen * 0.6,  # Height
+            (1, 4),  # Shape: 2 buttons wide, 2 buttons tall
+            border=50,  # Distance between buttons and edge of array
+            # Sets the texts of each button (counts left to right then top to bottom)
+            texts=('Очистить список объектов', '2', '3', '4'),
+            # When clicked, print number
+            onClicks=(self.sm.clear_objects, lambda: print('2'), lambda: print('3'), lambda: print('4'))
+        )
 
         # обработка событий (этот метод в конструкторе идет последним, после него конструктор не читает)
         self.event_loop()
@@ -88,7 +101,8 @@ class MainLoop:
         """
 
         # цикл обработки событий
-        for event in pygame.event.get():
+        self.events = pygame.event.get()
+        for event in self.events:
 
             # проверить закрытие окна
             if event.type == pygame.QUIT:
@@ -152,9 +166,6 @@ class MainLoop:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button in [1]:  # ЛКМ
                     print(event.pos)
-                    if self.menu_on:
-                        if self.clear_space_button.Button_figure.collidepoint(event.pos):
-                            self.clear_space_button.click()
                 if event.button in [3]:  # ПКМ
                     pass
 
@@ -205,31 +216,6 @@ class MainLoop:
             text = font_type.render(message, True, font_color)
             self.sc.blit(text, (x, y))
 
-        def draw_button(message,
-                        x, y, width, height,
-                        inactive_color=pygame.Color('steelblue'),
-                        active_color=pygame.Color('deepskyblue')):
-            """
-            Отрисовка кнопки на экране.
-
-            x, y - координаты кнопки
-            width, height - ширина и высота кнопки
-            message - сообщение
-
-            """
-
-            # отслеживание позиции курсора
-            mouse = pygame.mouse.get_pos()
-
-            # отрисовка фона кнопки
-            if (x < mouse[0] < x + width) and (y < mouse[1] < y + height):
-                pygame.draw.rect(self.sc, active_color, (x, y, width, height))
-            else:
-                pygame.draw.rect(self.sc, inactive_color, (x, y, width, height))
-
-            # отрисовка текста кнопки
-            print_text(message, x, y)
-
         def string_of_status():
             # нижняя строка состояния
             size_text = self.height_screen * 0.03
@@ -241,32 +227,8 @@ class MainLoop:
                        font_size=int(size_text),
                        font_color=(0, 0, 0))
 
-        def menu():
-            """
-            Отображение меню пользователя.
-
-            """
-
-            # Поле для отображения меню
-            pygame.draw.rect(self.sc, pygame.Color('lavender'),
-                             (self.width_screen * 0.2, self.height_screen * 0.2,
-                              self.width_screen * 0.6, self.height_screen * 0.6))
-            pygame.draw.rect(self.sc, pygame.Color('midnightblue'),
-                             (self.width_screen * 0.2, self.height_screen * 0.2,
-                              self.width_screen * 0.6, self.height_screen * 0.6), 10)
-
-            # кнопки меню
-            # очистить расчетную область
-            if self.clear_space_button.Button_figure.collidepoint(self.mouse):
-                pygame.draw.rect(self.sc, pygame.Color('red'), self.clear_space_button.Button_figure)
-            else:
-                pygame.draw.rect(self.sc, pygame.Color('blue'), self.clear_space_button.Button_figure)
-
-        # обновление фона
+        # Цвет фона
         self.sc.fill(pygame.Color('#000020'))
-
-        # отслеживание позиции курсора
-        self.mouse = pygame.mouse.get_pos()
 
         # Визуализация объектов
         for object_in_space in self.sm.Objects:
@@ -281,7 +243,7 @@ class MainLoop:
 
         # отрисовка меню пользователя
         if self.menu_on:
-            menu()
+            pygame_widgets.update(self.events)
 
         # отрисовка статусной строки
         string_of_status()
