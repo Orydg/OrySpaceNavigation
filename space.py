@@ -119,3 +119,6 @@ class Space:
                 self.Objects += [so]
 
             return True
+
+    def clear_objects(self):
+        self.Objects = []

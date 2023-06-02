@@ -9,7 +9,7 @@
 
 import pygame
 from win32api import GetSystemMetrics
-from settings import Settings
+from settings import Settings, Buttons
 
 
 pygame.init()
@@ -72,6 +72,11 @@ class MainLoop:
 
         # отслеживание позиции курсора
         self.mouse = []
+
+        # Создание кнопок
+        self.clear_space_button = Buttons(self.sm.clear_objects,
+                                          pygame.rect.Rect(self.width_screen / 2 - 20,
+                                                           self.height_screen / 2 - 20, 40, 40))
 
         # обработка событий (этот метод в конструкторе идет последним, после него конструктор не читает)
         self.event_loop()
@@ -148,7 +153,8 @@ class MainLoop:
                 if event.button in [1]:  # ЛКМ
                     print(event.pos)
                     if self.menu_on:
-                        pass
+                        if self.clear_space_button.Button_figure.collidepoint(event.pos):
+                            self.clear_space_button.click()
                 if event.button in [3]:  # ПКМ
                     pass
 
@@ -235,16 +241,6 @@ class MainLoop:
                        font_size=int(size_text),
                        font_color=(0, 0, 0))
 
-        def menu_click(event):
-            """
-            Метод обработки нажатий кнопок мыши на меню.
-
-            event - событие, которое необходимо выхвать при нажатии на меню.
-
-            """
-
-            pass
-
         def menu():
             """
             Отображение меню пользователя.
@@ -261,11 +257,10 @@ class MainLoop:
 
             # кнопки меню
             # очистить расчетную область
-            clear_button = pygame.rect.Rect(self.width_screen / 2 - 20, self.height_screen / 2 - 20, 40, 40)
-            if clear_button.collidepoint(self.mouse):
-                pygame.draw.rect(self.sc, pygame.Color('red'), clear_button)
+            if self.clear_space_button.Button_figure.collidepoint(self.mouse):
+                pygame.draw.rect(self.sc, pygame.Color('red'), self.clear_space_button.Button_figure)
             else:
-                pygame.draw.rect(self.sc, pygame.Color('blue'), clear_button)
+                pygame.draw.rect(self.sc, pygame.Color('blue'), self.clear_space_button.Button_figure)
 
         # обновление фона
         self.sc.fill(pygame.Color('#000020'))
