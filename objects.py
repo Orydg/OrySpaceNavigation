@@ -102,7 +102,7 @@ class SpaceObjects:
         self.Ay = None
         self.StaticCoord = False
         self.CoordFromTime = False
-        self.Color = pygame.Color('green')
+        self.Color = None  # pygame.Color('green')
         # self.Orbit = ObjectOrbit(self)a
 
     def set_coord(self, x=0.0, y=0.0, vx=0.0, vy=0.0, ax=0.0, ay=0.0, t=1.0):
@@ -170,7 +170,7 @@ class SpaceObjects:
 
         """
 
-        self.Color = color
+        self.Color = [i for i in color]
 
     def set_r(self, m, min_r=Settings.min_r):
         if self.R * m > min_r:

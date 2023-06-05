@@ -8,10 +8,11 @@
 
 
 import pygame
-import pygame_widgets
+# import pygame_widgets
 from win32api import GetSystemMetrics
 from settings import Settings
 from pygame_widgets.button import ButtonArray
+import menu_tk as tk
 
 
 pygame.init()
@@ -130,10 +131,11 @@ class MainLoop:
 
                 # отображение меню
                 if event.key == pygame.K_TAB:
-                    if self.menu_on:
-                        self.menu_on = False
-                    else:
-                        self.menu_on = True
+                    # if self.menu_on:
+                    #     self.menu_on = False
+                    # else:
+                    #     self.menu_on = True
+                    tk.Run(self.sm, self)
 
                 # пауза
                 if event.key == pygame.K_SPACE or event.key == pygame.K_p:
@@ -236,7 +238,6 @@ class MainLoop:
         # Визуализация объектов
         for object_in_space in self.sm.Objects:
             object_in_space.draw(self.sc, shift=(self.offset_x, self.offset_y), m=self.m)
-            # TODO планеты и ракеты в реальном масштабе не видно - нужно придумать коэф-ты маштабирования визуалки
 
         # отрисовка сообщения о паузе
         if self.pause:
@@ -246,7 +247,8 @@ class MainLoop:
 
         # отрисовка меню пользователя
         if self.menu_on:
-            pygame_widgets.update(self.events)
+            # pygame_widgets.update(self.events)
+            pass
 
         # отрисовка статусной строки
         string_of_status()

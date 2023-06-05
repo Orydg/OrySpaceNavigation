@@ -64,13 +64,13 @@ class Space:
                 obj1.change_coord(t, ax=a1 * ort_vector[0], ay=a1 * ort_vector[1])
                 obj2.change_coord(t, ax=a2 * ort_vector[0], ay=a2 * ort_vector[1])
 
-    def save_obj(self):
+    def save_obj(self, file_name="save1.csv"):
         """
         Метод сохранения объектов и их состояния.
 
         """
-        file_name = "save1.csv"
-        with open(Settings.path + file_name, mode="w") as file:
+
+        with open(file_name, mode="w") as file:
             names = ["Название", "Масса", "Радиус", "X", "Y", "Vx", "Vy", "Ax", "Ay",
                      "Статические координаты", "Зависит от времени", "Цвет"]
             file_writer = csv.writer(file,
@@ -100,7 +100,7 @@ class Space:
 
         """
 
-        with open(Settings.path + file_name) as r_file:
+        with open(file_name) as r_file:
             # Создаем объект reader, указываем символ-разделитель ";"
             file_reader = csv.DictReader(r_file, delimiter=";")
             # Считывание данных из CSV файла
